@@ -2,14 +2,43 @@ package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 
 /**
- * A class which is extended by player's plane class and enemy's vehicles
+ * Abstract class which is extended by player's plane class and enemy's vehicles
  * */
-public class Vehicle {
+public abstract class Vehicle {
     private int speed;
     private int dir;
     private int positionX;
     private int positionY;
     private int radius;
+    private int speedX, speedY;
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public int getSpeedX() {
+        return speedX;
+    }
+
+    public void setSpeedX(int speedX) {
+        this.speedX = speedX;
+    }
+
+    public int getSpeedY() {
+        return speedY;
+    }
+
+    public void setSpeedY(int speedY) {
+        this.speedY = speedY;
+    }
 
     public void setSpeed(int speed) {
         this.speed = speed;

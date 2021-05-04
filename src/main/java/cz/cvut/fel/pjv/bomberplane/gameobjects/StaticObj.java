@@ -6,8 +6,8 @@ package cz.cvut.fel.pjv.bomberplane.gameobjects;
  * by the player for a reward on every level
  * */
 public class StaticObj {
-    private int positionX;
-    private int getPositionY;
+    int positionX;
+    int getPositionY;
 
     public void actionWhenDestroyed(){}
 }

@@ -6,8 +6,8 @@ package cz.cvut.fel.pjv.bomberplane.gameobjects;
  * and then interact with other vehicles
  * */
 public class Missile {
-    private int firepower;
-    private int positionX;
-    private int PositionY;
-    private boolean isAtomic;
+    int firepower;
+    int positionX;
+    int PositionY;
+    boolean isAtomic;
 }
