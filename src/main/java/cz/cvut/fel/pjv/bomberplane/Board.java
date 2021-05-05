@@ -1,5 +1,6 @@
 package cz.cvut.fel.pjv.bomberplane;
 
+import javax.sound.midi.MidiChannel;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
@@ -8,7 +9,10 @@ import java.time.chrono.MinguoChronology;
 import java.util.Random;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
+import cz.cvut.fel.pjv.bomberplane.gameobjects.Jeep;
+import cz.cvut.fel.pjv.bomberplane.gameobjects.Missile;
 import cz.cvut.fel.pjv.bomberplane.gameobjects.Plane;
+import cz.cvut.fel.pjv.bomberplane.gameobjects.Vehicle;
 
 
 /**
@@ -18,9 +22,11 @@ import cz.cvut.fel.pjv.bomberplane.gameobjects.Plane;
 public class Board extends JPanel implements ActionListener {
     private Variables Vars;
     private Plane plane;
+    private Jeep jeep;
     private int speed = 3;
     private Timer timer;
-    private boolean inGame = true;
+    private boolean inGame = false;
+    public boolean jeepIs = true;
 
     public Board() {
         Vars = new Variables();
@@ -32,6 +38,7 @@ public class Board extends JPanel implements ActionListener {
         addMouseListener(new MyMouseAdapter());
         initTimer();
         plane = new Plane(speed, 1);
+        jeep = new Jeep(Vars.getJeepPic(), 0, 310, 5);
 
         setFocusable(true);
         setBackground(Vars.getBackgroundColor());
@@ -52,7 +59,25 @@ public class Board extends JPanel implements ActionListener {
 //            drawPacman(g2d);
 //        }
         plane.move();
-        drawPlane(g2d);
+        jeep.move();
+        if (plane.checkBombs() > 0) {
+            for (Missile bomb : plane.getBombs()) {
+                bomb.move();
+                drawBomb(g2d, bomb);
+                if (bomb.isExplosion()) {
+                    if ((bomb.getPositionX() + 20) > jeep.getPositionX() && bomb.getPositionX() - 20 < jeep.getPositionX()) {
+                        jeepIs = false;
+                        g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
+                    }
+                    g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
+                }
+            }
+        }
+        drawObj(g2d, plane);
+        if (jeepIs) {
+            drawObj(g2d, jeep);
+        }
+
 //
 //        if (bomba) {
 //            moveBomb();
@@ -72,6 +97,20 @@ public class Board extends JPanel implements ActionListener {
 //        g2d.fillRect(0, 0, width, height);
         doDrawing(g);
     }
+    private void showIntroScreen(Graphics2D g2d) {
+        g2d.setColor(new Color(0, 32, 48));
+        g2d.fillRect(50, Main.panelHeight / 2 - 30, Main.panelWidth - 100, 50);
+        g2d.setColor(Color.white);
+        g2d.drawRect(50, Main.panelHeight/ 2 - 30, Main.panelWidth - 100, 50);
+
+        String s = "Press space to start";
+        Font small = new Font("Helvetica", Font.BOLD, 24);
+        FontMetrics metr = this.getFontMetrics(small);
+
+        g2d.setColor(Color.white);
+        g2d.setFont(small);
+        g2d.drawString(s, Main.panelHeight / 2, (Main.panelWidth - 100) / 2 - 70);
+    }
 
     private void doDrawing(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
@@ -83,15 +122,23 @@ public class Board extends JPanel implements ActionListener {
         g2d.fillRect(0, 320, Main.panelWidth, Main.panelHeight);
 
 //        drawPlane(g2d);
-        playGame(g2d);
+        if (inGame) {
+            playGame(g2d);
+        }
+        else{
+            showIntroScreen(g2d);
+        }
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
     }
 
-    private void drawPlane(Graphics2D g2d) {
-        g2d.drawImage(plane.getPlanePic(), plane.getPositionX(), plane.getPositionY(), this);
+    private void drawObj(Graphics2D g2d, Vehicle obj) {
+        g2d.drawImage(obj.getPicture(), obj.getPositionX(), obj.getPositionY(), this);
     }
 
+    private void drawBomb(Graphics2D g2d, Missile obj) {
+        g2d.drawImage(obj.getPicture(), obj.getPositionX(), obj.getPositionY(), this);
+    }
 
     public int getLevel() {
         return Vars.getLevel();
@@ -155,41 +202,54 @@ public class Board extends JPanel implements ActionListener {
             int key = e.getKeyCode();
 //
             if (inGame) {
-                if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) {
-                    if (plane.getSpeedX() >= 0) {
-                        plane.setSpeedX(-plane.getSpeed());
+                if (key == KeyEvent.VK_LEFT) {
+                    plane.setSpeedX(-plane.getSpeed());
 
-                        plane.setSpeedY(0);
-                        plane.setPlanePic(plane.getPlaneleft());
-                    }
-                } else if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
-                    if (plane.getSpeedX() <= 0) {
-                        plane.setSpeedX(plane.getSpeed());
+                    plane.setPlanePic(plane.getPlaneleft());
+                    plane.setSpeedY(0);
 
-                        plane.setSpeedY(0);
-                        plane.setPlanePic(plane.getPlanerigth());
-                    }
+                } else if (key == KeyEvent.VK_RIGHT) {
+                    plane.setSpeedX(plane.getSpeed());
+
+                    plane.setPlanePic(plane.getPlanerigth());
+                    plane.setSpeedY(0);
+
 
                 } else if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W) {
-                    if (plane.getSpeedY() >= 0) {
-                        plane.setSpeedY(-plane.getSpeed());
+                    plane.setSpeedY(-plane.getSpeed());
 
-                        plane.setSpeedX(0);
-                        plane.setPlanePic(plane.getPlaneup());
-                    }
+                    plane.setPlanePic(plane.getPlaneup());
+                    plane.setSpeedX(0);
+
 
                 } else if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) {
 
-                    if (plane.getSpeedY() <= 0) {
-                        plane.setSpeedY(plane.getSpeed());
+                    plane.setSpeedY(plane.getSpeed());
 
-                        plane.setSpeedX(0);
-                        plane.setPlanePic(plane.getPlanedown());
-                    }
+                    plane.setPlanePic(plane.getPlanedown());
+                    plane.setSpeedX(0);
+
+                } else if (key == KeyEvent.VK_Q) {
+                    plane.setSpeedY(-plane.getSpeed());
+                    plane.setSpeedX(-plane.getSpeed());
+                    plane.setPlanePic(plane.getPlaneleftup());
+                } else if (key == KeyEvent.VK_E) {
+                    plane.setSpeedY(-plane.getSpeed());
+                    plane.setSpeedX(plane.getSpeed());
+                    plane.setPlanePic(plane.getPlanerightup());
+                } else if (key == KeyEvent.VK_A) {
+                    plane.setSpeedY(plane.getSpeed());
+                    plane.setSpeedX(-plane.getSpeed());
+                    plane.setPlanePic(plane.getPlanedownleft());
+                } else if (key == KeyEvent.VK_D) {
+                    plane.setSpeedY(plane.getSpeed());
+                    plane.setSpeedX(plane.getSpeed());
+                    plane.setPlanePic(plane.getPlanedownright());
                 }
 
                 if (key == KeyEvent.VK_B) {
 //                    dropBomb();
+                    plane.shoot();
                 } else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
                     inGame = false;
                 } else if (key == KeyEvent.VK_P) {
@@ -202,7 +262,7 @@ public class Board extends JPanel implements ActionListener {
 
 
             } else {
-                if (key == 's' || key == 'S') {
+                if (key == 's' || key == 'S'|| key == KeyEvent.VK_SPACE) {
                     inGame = true;
 //                    initGame();
                 }

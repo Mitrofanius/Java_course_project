@@ -1,23 +1,31 @@
 package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Plane object to be controlled by a user
- * */
-public class Plane extends Vehicle{
+ */
+public class Plane extends Vehicle {
 
     private int numberOfKills;
+    private int numOfConcurrentBombsToDrop = 5;
+    private long startTime;
+    private long elapsedTime = 0L;
+
     private int numberOfLives;
     private int numOfAtomicBombs;
     private int transferOffset = 50;
     private Image planeleft, planerigth,
             planeleftup, planerightup,
             planedownright, planedownleft,
-            planeup, planedown, bomb, planePic;
+            planeup, planedown, bombPic;
 
+    private HashSet<Missile> bombs;
 
     public Plane(int speed, int dir) {
         this.setSpeed(speed);
@@ -26,18 +34,38 @@ public class Plane extends Vehicle{
         this.setDir(dir);
         this.setPositionX(0);
         this.setPositionY(0);
+        bombs = new HashSet<Missile>();
         loadImages();
     }
 
+    public HashSet<Missile> getBombs() {
+        return bombs;
+    }
+
     public void shoot() {
-        // TODO
+        if (numOfConcurrentBombsToDrop > bombs.size()) {
+            startTime = System.currentTimeMillis();
+            bombs.add(new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic()));
+        }
+    }
+    public int checkBombs(){
+        for (Missile bomb: bombs){
+            if (!bomb.isActive()){
+                bombs.remove(bomb);
+            }
+        }
+        return bombs.size();
+    }
+
+    public void removeBomb(Missile obj){
+        bombs.remove(obj);
     }
 
     @Override
     public void move() {
         this.setPositionX(this.getPositionX() + this.getSpeedX());
         this.setPositionY(this.getPositionY() + this.getSpeedY());
-        if ((this.getPositionX() + transferOffset) >= Main.panelWidth) {
+        if ((this.getPositionX() + transferOffset - transferOffset / 3) >= Main.panelWidth) {
             this.setPositionX(-transferOffset + 1);
         }
         if ((this.getPositionX() + transferOffset) <= 0) {
@@ -48,6 +76,7 @@ public class Plane extends Vehicle{
         }
     }
 
+    public void animate(){}
 
     private void loadImages() {
         planeleft = new ImageIcon("Pictures\\left.png").getImage();
@@ -58,8 +87,8 @@ public class Plane extends Vehicle{
         planedown = new ImageIcon("Pictures\\down.png").getImage();
         planedownleft = new ImageIcon("Pictures\\downleft.png").getImage();
         planedownright = new ImageIcon("Pictures\\downright.png").getImage();
-        planePic = planerigth;
-        bomb = new ImageIcon("Pictures\\bomb4.png").getImage();
+        this.setPicture(planerigth);
+        bombPic = new ImageIcon("Pictures\\bomb4.png").getImage();
     }
 
     public int getNumberOfKills() {
@@ -111,15 +140,13 @@ public class Plane extends Vehicle{
     }
 
     public void setPlanePic(Image planePic) {
-        this.planePic = planePic;
+        this.setPicture(planePic);
     }
 
-    public Image getBomb() {
-        return bomb;
+    public Image getBombPic() {
+        return bombPic;
     }
 
-    public Image getPlanePic() {
-        return planePic;
-    }
+
 }
 

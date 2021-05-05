@@ -1,7 +1,8 @@
 package cz.cvut.fel.pjv.bomberplane;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * Create a Frame, start the game

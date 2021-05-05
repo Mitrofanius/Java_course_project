@@ -1,12 +1,22 @@
 package cz.cvut.fel.pjv.bomberplane;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class Variables {
+    public Image getBombPic() {
+        return bombPic;
+    }
+
+    public Image getExplosionPic() {
+        return explosionPic;
+    }
+
     private int level;
     private int trucks;
     private int tanks;
     private int jeeps;
+    private Image jeepPic, bombPic, explosionPic;
 
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -57,8 +67,19 @@ public class Variables {
 
     private int totalObjects;
 
+    public Image getJeepPic() {
+        return jeepPic;
+    }
+
     public Variables(){
-//        initVatiables();
+//        initVariables();
+        loadPics();
+    }
+    private void loadPics(){
+        jeepPic = new ImageIcon("Pictures\\jeep2.png").getImage();
+        bombPic = new ImageIcon("Pictures\\bomb4.png").getImage();
+        explosionPic = new ImageIcon("Pictures\\explosion2.png").getImage();
+
     }
 
 }

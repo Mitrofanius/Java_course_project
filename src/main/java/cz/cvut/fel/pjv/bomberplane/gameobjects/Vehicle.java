@@ -1,12 +1,24 @@
 package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 
+import java.awt.*;
+
 /**
  * Abstract class which is extended by player's plane class and enemy's vehicles
  * */
 public abstract class Vehicle {
+    private Image picture;
     private int speed;
     private int dir;
+
+    public Image getPicture() {
+        return picture;
+    }
+
+    public void setPicture(Image picture) {
+        this.picture = picture;
+    }
+
     private int positionX;
     private int positionY;
     private int radius;
