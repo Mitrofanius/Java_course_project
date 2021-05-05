@@ -52,10 +52,18 @@ public class Board extends JPanel implements ActionListener {
         timer.start();
     }
 
+    private void death() {
+        inGame = false;
+    }
+
     private void playGame(Graphics2D g2d) {
-//        if (dying) {
-//            death();
-//        } else {
+        if (plane.isDying()) {
+            for (int i = 0; i < 3; i++) {
+                g2d.drawImage(Vars.getExplosionPic(), plane.getPositionX(), plane.getPositionY(), this);
+            }
+            death();
+        }
+//        else {
 //            movePacman();
 //            moveGhosts(g2d);
 //            checkMaze();
@@ -94,11 +102,12 @@ public class Board extends JPanel implements ActionListener {
 //        g2d.fillRect(0, 0, width, height);
         doDrawing(g);
     }
+
     private void showIntroScreen(Graphics2D g2d) {
         g2d.setColor(new Color(16, 92, 130));
         g2d.fillRect(50, Main.panelHeight / 2 - 30, Main.panelWidth - 100, 50);
         g2d.setColor(Color.white);
-        g2d.drawRect(50, Main.panelHeight/ 2 - 30, Main.panelWidth - 100, 50);
+        g2d.drawRect(50, Main.panelHeight / 2 - 30, Main.panelWidth - 100, 50);
 
         String s = "Press space to start";
         Font small = new Font("Helvetica", Font.BOLD, 24);
@@ -126,8 +135,7 @@ public class Board extends JPanel implements ActionListener {
 
         if (inGame) {
             playGame(g2d);
-        }
-        else{
+        } else {
             showIntroScreen(g2d);
         }
         Toolkit.getDefaultToolkit().sync();
@@ -264,7 +272,7 @@ public class Board extends JPanel implements ActionListener {
 
 
             } else {
-                if (key == 's' || key == 'S'|| key == KeyEvent.VK_SPACE) {
+                if (key == 's' || key == 'S' || key == KeyEvent.VK_SPACE) {
                     inGame = true;
 //                    initGame();
                 }

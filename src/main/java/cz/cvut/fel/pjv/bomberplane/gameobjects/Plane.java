@@ -15,7 +15,17 @@ public class Plane extends Vehicle {
     private int numberOfKills;
     private int numOfConcurrentBombsToDrop = 5;
     private long startTime;
+
+    public boolean isDying() {
+        return dying;
+    }
+
+    public void setDying(boolean dying) {
+        this.dying = dying;
+    }
+
     private long elapsedTime = 0L;
+    private boolean dying = false;
 
     private int numberOfLives;
     private int numOfAtomicBombs;
@@ -73,6 +83,9 @@ public class Plane extends Vehicle {
         }
         if ((this.getPositionY() < 0)) {
             this.setSpeedY(this.getSpeed());
+        }
+        if (this.getPositionY() > 300){
+            dying = true;
         }
     }
 
