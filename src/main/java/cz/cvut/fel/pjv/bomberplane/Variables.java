@@ -2,6 +2,14 @@ package cz.cvut.fel.pjv.bomberplane;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+//import org.apache.commons.io.IOUtils;
+
 
 public class Variables {
     public Image getBombPic() {
@@ -12,6 +20,7 @@ public class Variables {
         return explosionPic;
     }
 
+    String fromJson;
     private int level;
     private int trucks;
     private int tanks;
@@ -75,6 +84,38 @@ public class Variables {
 //        initVariables();
         loadPics();
     }
+
+    public void init_level(int num){
+        fromJson = read_file("JsonFiles\\level_1.json");
+        System.out.println(fromJson);
+    }
+
+    public String read_file (String arg) {
+        String everything = null;
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(arg);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+//            everything = IOUtils.toString(inputStream);
+            try {
+                everything = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return everything;
+    }
+
     private void loadPics(){
         jeepPic = new ImageIcon("Pictures\\jeep2.png").getImage();
         bombPic = new ImageIcon("Pictures\\bomb4.png").getImage();

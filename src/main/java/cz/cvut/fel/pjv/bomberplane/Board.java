@@ -8,6 +8,7 @@ import java.awt.event.*;
 import java.time.chrono.MinguoChronology;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
 import cz.cvut.fel.pjv.bomberplane.gameobjects.Jeep;
@@ -33,6 +34,7 @@ public class Board extends JPanel implements ActionListener {
 
     public Board() {
         Vars = new Variables();
+        Vars.init_level(1);
         initBoard();
     }
 
@@ -53,14 +55,17 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void death() {
+//        try {
+//            TimeUnit.SECONDS.sleep(1);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         inGame = false;
     }
 
     private void playGame(Graphics2D g2d) {
         if (plane.isDying()) {
-            for (int i = 0; i < 3; i++) {
-                g2d.drawImage(Vars.getExplosionPic(), plane.getPositionX(), plane.getPositionY(), this);
-            }
+            g2d.drawImage(Vars.getExplosionPic(), plane.getPositionX(), plane.getPositionY(), this);
             death();
         }
 //        else {
