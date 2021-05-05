@@ -11,6 +11,7 @@ public abstract class Vehicle {
     private int speed;
     private int dir;
 
+
     public Image getPicture() {
         return picture;
     }

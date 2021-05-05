@@ -6,6 +6,7 @@ import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.chrono.MinguoChronology;
+import java.util.HashSet;
 import java.util.Random;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
@@ -27,6 +28,8 @@ public class Board extends JPanel implements ActionListener {
     private Timer timer;
     private boolean inGame = false;
     public boolean jeepIs = true;
+
+    private HashSet<Vehicle> enemies;
 
     public Board() {
         Vars = new Variables();
@@ -78,12 +81,6 @@ public class Board extends JPanel implements ActionListener {
             drawObj(g2d, jeep);
         }
 
-//
-//        if (bomba) {
-//            moveBomb();
-//            drawBomb(g2d);
-//        }
-
     }
 
     @Override
@@ -98,7 +95,7 @@ public class Board extends JPanel implements ActionListener {
         doDrawing(g);
     }
     private void showIntroScreen(Graphics2D g2d) {
-        g2d.setColor(new Color(0, 32, 48));
+        g2d.setColor(new Color(16, 92, 130));
         g2d.fillRect(50, Main.panelHeight / 2 - 30, Main.panelWidth - 100, 50);
         g2d.setColor(Color.white);
         g2d.drawRect(50, Main.panelHeight/ 2 - 30, Main.panelWidth - 100, 50);
@@ -120,8 +117,13 @@ public class Board extends JPanel implements ActionListener {
         g2d.fillRect(0, 0, Main.panelWidth, Main.panelHeight);
         g2d.setColor(new Color(19, 177, 19));
         g2d.fillRect(0, 320, Main.panelWidth, Main.panelHeight);
+//        g2d.fillArc(0, 310, 100, 20, 90, 90);
+        g2d.fillOval(0, 315, 70, 50);
+        g2d.fillOval(50, 310, 70, 30);
+        g2d.fillOval(150, 310, 100, 30);
+        g2d.fillOval(350, 310, 80, 50);
+        g2d.fillOval(500, 300, 70, 50);
 
-//        drawPlane(g2d);
         if (inGame) {
             playGame(g2d);
         }
