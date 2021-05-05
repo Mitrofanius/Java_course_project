@@ -1,0 +1,7 @@
+~  Animation of the plane (using enum/switch)
+~  Levels from JSON - number of enemy's entities, maybe landscape
+~  Try to add some menu, this may be connected with JSON
+~  If menu - maybe save some stats to JSON
+~  implement buildings and flying rewards -> different bombs, numOfCurrent, firepower
+~  Add lives, kills, bombs
+~  Mouse adapter - Pythagorean theorem
