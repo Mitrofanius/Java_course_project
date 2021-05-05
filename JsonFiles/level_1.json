@@ -1,0 +1,22 @@
+{
+  "level": 1,
+  "numTanks": 0,
+  "numTrucks": 2,
+  "numJeeps": 1,
+  "hills": [
+    {
+      "x": 500,
+      "y": 300,
+      "radius": 70
+    },
+    {
+      "x": 100,
+      "y": 310,
+      "radius": 50
+    }
+  ],
+  "buildings": [
+    {"red": 400,
+    "white": 300}
+  ]
+}
