@@ -1,20 +1,14 @@
 package cz.cvut.fel.pjv.bomberplane;
 
-import javax.sound.midi.MidiChannel;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
-import java.time.chrono.MinguoChronology;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
-import cz.cvut.fel.pjv.bomberplane.Main;
-import cz.cvut.fel.pjv.bomberplane.gameobjects.Jeep;
-import cz.cvut.fel.pjv.bomberplane.gameobjects.Missile;
-import cz.cvut.fel.pjv.bomberplane.gameobjects.Plane;
-import cz.cvut.fel.pjv.bomberplane.gameobjects.Vehicle;
+import cz.cvut.fel.pjv.bomberplane.gameobjects.*;
 
 
 /**
@@ -25,12 +19,16 @@ public class Board extends JPanel implements ActionListener {
     private Variables Vars;
     private Plane plane;
     private Jeep jeep;
+    private Truck truck;
+    private  Tank tank;
     private int speed = 3;
     private Timer timer;
     private boolean inGame = false;
     public boolean jeepIs = true;
 
     private HashSet<Vehicle> enemies;
+    LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
+
 
     public Board() {
         Vars = new Variables();
@@ -43,7 +41,29 @@ public class Board extends JPanel implements ActionListener {
         addMouseListener(new MyMouseAdapter());
         initTimer();
         plane = new Plane(speed, 1);
-        jeep = new Jeep(Vars.getJeepPic(), 0, 310, 5);
+        int i = 0;
+        int coordX = 0;
+        int speedDir = 1;
+        for (i = 0; i < Vars.getJeeps(); i++) {
+            jeep = new Jeep(Vars.getJeepPic(), coordX, 310, 5 * speedDir);
+            vehicles.add(jeep);
+            coordX += 100;
+            speedDir *= -1;
+        }
+
+        for (i = 0; i < Vars.getTrucks(); i++) {
+            truck = new Truck(Vars.getTruckPicLeft(), Vars.getTruckPicRight(), coordX, 310, 3 * speedDir);
+            vehicles.add(truck);
+            coordX += 70;
+            speedDir *= -1;
+        }
+
+        for (i = 0; i < Vars.getTanks(); i++) {
+            tank = new Tank(Vars.getTankPicLeft(), Vars.getTankPicRight(), Vars.getTankPicUp(), coordX, 310, 3 * speedDir);
+            vehicles.add(tank);
+            coordX += 50;
+            speedDir *= -1;
+        }
 
         setFocusable(true);
         setBackground(Vars.getBackgroundColor());
@@ -75,24 +95,40 @@ public class Board extends JPanel implements ActionListener {
 //            drawPacman(g2d);
 //        }
         plane.move();
-        jeep.move();
+//        jeep.move();
+        for (int i = vehicles.size() - 1; i > -1; i--) {
+            vehicles.get(i).move();
+        }
         if (plane.checkBombs() > 0) {
             for (Missile bomb : plane.getBombs()) {
                 bomb.move();
                 drawBomb(g2d, bomb);
                 if (bomb.isExplosion()) {
-                    if ((bomb.getPositionX() + 20) > jeep.getPositionX() && bomb.getPositionX() - 20 < jeep.getPositionX()) {
-                        jeepIs = false;
+                    for (int i = 0; i < vehicles.size(); i++) {
+                        if ((bomb.getPositionX() + 20) > vehicles.get(i).getPositionX() && bomb.getPositionX() - 20 < vehicles.get(i).getPositionX()) {
+                            vehicles.get(i).setDying(true);
+                            g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
+                        }
                         g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
                     }
-                    g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
                 }
             }
         }
-        drawObj(g2d, plane);
-        if (jeepIs) {
-            drawObj(g2d, jeep);
+        for (int i = vehicles.size() - 1; i > -1; i--) {
+            if (vehicles.get(i).isDying()) {
+                vehicles.remove(i);
+            } else {
+                drawObj(g2d, vehicles.get(i));
+            }
         }
+
+        drawObj(g2d, plane);
+
+//        for (int i = 0; i < vehicles.size(); i++) {
+//            if (!vehicles.get(i).isDying()) {
+//                drawObj(g2d, vehicles.get(i));
+//            }
+//        }
 
     }
 
@@ -148,6 +184,9 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void drawObj(Graphics2D g2d, Vehicle obj) {
+        g2d.drawImage(obj.getPicture(), obj.getPositionX(), obj.getPositionY(), this);
+    }
+    private void drawObj(Graphics2D g2d, PlaneBuilder obj) {
         g2d.drawImage(obj.getPicture(), obj.getPositionX(), obj.getPositionY(), this);
     }
 

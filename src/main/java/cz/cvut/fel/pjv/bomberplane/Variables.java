@@ -1,13 +1,12 @@
 package cz.cvut.fel.pjv.bomberplane;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 //import org.apache.commons.io.IOUtils;
 
 
@@ -25,7 +24,9 @@ public class Variables {
     private int trucks;
     private int tanks;
     private int jeeps;
-    private Image jeepPic, bombPic, explosionPic;
+    private Image jeepPic, truckPicLeft, tankPicLeft,
+            tankPicUp, tankPicRight, bombPic, truckPicRight,
+            explosionPic, houseRedPic, houseWhitePic, bonusBombPic;
 
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -88,6 +89,26 @@ public class Variables {
     public void init_level(int num){
         fromJson = read_file("JsonFiles\\level_1.json");
         System.out.println(fromJson);
+//        parseJson(fromJson);
+        JSONObject o = new JSONObject(fromJson);
+
+        setTanks(o.getInt("numTanks"));
+        setTrucks(o.getInt("numTrucks"));
+        setJeeps(o.getInt("numJeeps"));
+    }
+
+    public void parseJson(String input){
+        JSONObject o = new JSONObject(input);
+//        JSONObject level = o.getJSONObject("level");
+        System.out.println("\n\n\n" + "This is the level " + o.getInt("level"));
+    }
+
+    public Image getTruckPicLeft() {
+        return truckPicLeft;
+    }
+
+    public Image getTankPicLeft() {
+        return tankPicLeft;
     }
 
     public String read_file (String arg) {
@@ -118,9 +139,39 @@ public class Variables {
 
     private void loadPics(){
         jeepPic = new ImageIcon("Pictures\\jeep2.png").getImage();
+        truckPicLeft = new ImageIcon("Pictures\\truck_left.png").getImage();
+        truckPicRight = new ImageIcon("Pictures\\truck_right.png").getImage();
+        tankPicLeft = new ImageIcon("Pictures\\tank_left.png").getImage();
+        tankPicUp = new ImageIcon("Pictures\\tank_up.png").getImage();
+        tankPicRight = new ImageIcon("Pictures\\tank_right.png").getImage();
         bombPic = new ImageIcon("Pictures\\bomb4.png").getImage();
         explosionPic = new ImageIcon("Pictures\\explosion2.png").getImage();
-
+        houseRedPic = new ImageIcon("Pictures\\house_red.png").getImage();
+        houseWhitePic = new ImageIcon("Pictures\\house_white.png").getImage();
+        bonusBombPic = new ImageIcon("Pictures\\bonus.png").getImage();
     }
 
+    public Image getTankPicUp() {
+        return tankPicUp;
+    }
+
+    public Image getTankPicRight() {
+        return tankPicRight;
+    }
+
+    public Image getTruckPicRight() {
+        return truckPicRight;
+    }
+
+    public Image getHouseRedPic() {
+        return houseRedPic;
+    }
+
+    public Image getHouseWhitePic() {
+        return houseWhitePic;
+    }
+
+    public Image getBonusBombPic() {
+        return bonusBombPic;
+    }
 }

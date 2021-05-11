@@ -4,28 +4,30 @@ import cz.cvut.fel.pjv.bomberplane.Main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 /**
  * Plane object to be controlled by a user
  */
-public class Plane extends Vehicle {
+public class Plane extends PlaneBuilder {
 
     private int numberOfKills;
     private int numOfConcurrentBombsToDrop = 5;
     private long startTime;
 
-    public boolean isDying() {
-        return dying;
-    }
-
-    public void setDying(boolean dying) {
-        this.dying = dying;
-    }
-
-    private long elapsedTime = 0L;
-    private boolean dying = false;
+//    public boolean isDying() {
+//        return dying;
+//    }
+//
+//    public void setDying(boolean dying) {
+//        this.dying = dying;
+//    }
+//
+//    private long elapsedTime = 0L;
+//    private boolean dying = false;
 
     private int numberOfLives;
     private int numOfAtomicBombs;
@@ -35,7 +37,7 @@ public class Plane extends Vehicle {
             planedownright, planedownleft,
             planeup, planedown, bombPic;
 
-    private HashSet<Missile> bombs;
+    private LinkedList<Missile> bombs;
 
     public Plane(int speed, int dir) {
         this.setSpeed(speed);
@@ -44,11 +46,11 @@ public class Plane extends Vehicle {
         this.setDir(dir);
         this.setPositionX(0);
         this.setPositionY(0);
-        bombs = new HashSet<Missile>();
+        bombs = new LinkedList<>();
         loadImages();
     }
 
-    public HashSet<Missile> getBombs() {
+    public LinkedList<Missile> getBombs() {
         return bombs;
     }
 
@@ -59,9 +61,14 @@ public class Plane extends Vehicle {
         }
     }
     public int checkBombs(){
-        for (Missile bomb: bombs){
-            if (!bomb.isActive()){
-                bombs.remove(bomb);
+//        for (Missile bomb: bombs){
+//            if (!bomb.isActive()){
+//                bombs.remove(bomb);
+//            }
+//        }
+        for (int i = bombs.size() - 1; i > -1; i--){
+            if (!bombs.get(i).isActive()){
+                bombs.remove(i);
             }
         }
         return bombs.size();
@@ -85,7 +92,7 @@ public class Plane extends Vehicle {
             this.setSpeedY(this.getSpeed());
         }
         if (this.getPositionY() > 300){
-            dying = true;
+            setDying(true);
         }
     }
 

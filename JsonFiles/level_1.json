@@ -1,8 +1,8 @@
 {
   "level": 1,
-  "numTanks": 0,
+  "numTanks": 1,
   "numTrucks": 2,
-  "numJeeps": 1,
+  "numJeeps": 2,
   "hills": [
     {
       "x": 500,
