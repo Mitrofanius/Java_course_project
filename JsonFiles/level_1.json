@@ -3,6 +3,7 @@
   "numTanks": 1,
   "numTrucks": 2,
   "numJeeps": 2,
+  "numOfCurrentBombsToDrop": 1,
   "hills": [
     {
       "x": 500,
@@ -16,7 +17,13 @@
     }
   ],
   "buildings": [
-    {"red": 400,
-    "white": 300}
+    {"colour": "red",
+    "xPos": 300,
+    "yPos": 300,
+    "bonus": "PLUSBOMB"},
+    {"colour": "white",
+      "xPos": 100,
+      "yPos": 300,
+      "bonus": "PLUSBOMB"}
   ]
 }

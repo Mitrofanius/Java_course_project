@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import cz.cvut.fel.pjv.bomberplane.gameobjects.*;
-
+import cz.cvut.fel.pjv.bomberplane.gameobjects.Building.*;
 
 /**
  * A class to control the game:
@@ -17,17 +17,19 @@ import cz.cvut.fel.pjv.bomberplane.gameobjects.*;
  */
 public class Board extends JPanel implements ActionListener {
     private Variables Vars;
+    private Bonus localBon = Bonus.PLUSBOMBS;
     private Plane plane;
     private Jeep jeep;
     private Truck truck;
-    private  Tank tank;
-    private int speed = 3;
+    private Tank tank;
+    private int speed = 4;
     private Timer timer;
     private boolean inGame = false;
     public boolean jeepIs = true;
 
     private HashSet<Vehicle> enemies;
     LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
+    LinkedList<FloatingReward> rewards = new LinkedList<FloatingReward>();
 
 
     public Board() {
@@ -40,7 +42,7 @@ public class Board extends JPanel implements ActionListener {
         addKeyListener(new MyKeyAdapter());
         addMouseListener(new MyMouseAdapter());
         initTimer();
-        plane = new Plane(speed, 1);
+        plane = new Plane(speed, 1, Vars.getNumOfCurrentBombsToDrop());
         int i = 0;
         int coordX = 0;
         int speedDir = 1;
@@ -94,8 +96,36 @@ public class Board extends JPanel implements ActionListener {
 //            checkMaze();
 //            drawPacman(g2d);
 //        }
+        for (int i = Vars.getBuildings().size() - 1; i > -1; i--) {
+//            if (Vars.getBuildings().get(i).isDestroyed()) {
+//                rewards.add(new FloatingReward(Vars.getBonusBombPic(),
+//                        Vars.getBuildings().get(i).getPositionX(),
+//                        Vars.getBuildings().get(i).getPositionY(),
+//                        Vars.getBuildings().get(i).getBon()));
+//                Vars.getBuildings().remove(i);
+//            } else {
+            drawObj(g2d, Vars.getBuildings().get(i));
+//            }
+        }
+        for (int i = rewards.size() - 1; i > -1; i--) {
+            rewards.get(i).move();
+            if (((rewards.get(i).getPositionX() <= plane.getPositionX() + 20) &&
+                    (rewards.get(i).getPositionX() >= plane.getPositionX() - 20)
+                    && (rewards.get(i).getPositionY() <= plane.getPositionY() + 20)
+                    && (rewards.get(i).getPositionX() >= plane.getPositionX() - 20))) {
+                rewards.get(i).setCaught(true);
+                if (rewards.get(i).getBenefit().equals(Bonus.PLUSBOMBS)) {
+                    plane.setNumOfConcurrentBombsToDrop(plane.getNumOfConcurrentBombsToDrop() + 1);
+                }
+                rewards.remove(i);
+
+            } else {
+                drawObj(g2d, rewards.get(i));
+            }
+
+        }
         plane.move();
-//        jeep.move();
+
         for (int i = vehicles.size() - 1; i > -1; i--) {
             vehicles.get(i).move();
         }
@@ -104,9 +134,25 @@ public class Board extends JPanel implements ActionListener {
                 bomb.move();
                 drawBomb(g2d, bomb);
                 if (bomb.isExplosion()) {
-                    for (int i = 0; i < vehicles.size(); i++) {
+                    for (int i = vehicles.size() - 1; i > -1; i--) {
                         if ((bomb.getPositionX() + 20) > vehicles.get(i).getPositionX() && bomb.getPositionX() - 20 < vehicles.get(i).getPositionX()) {
-                            vehicles.get(i).setDying(true);
+//                            vehicles.get(i).setDying(true);
+                            vehicles.remove(i);
+                            g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
+                        }
+                        g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
+                    }
+
+                    for (int i = Vars.getBuildings().size() - 1; i > -1; i--) {
+                        if ((bomb.getPositionX() + 20) > Vars.getBuildings().get(i).getPositionX() && bomb.getPositionX() - 30 < Vars.getBuildings().get(i).getPositionX()) {
+//                            Vars.getBuildings().get(i).setDestroyed(true);
+//                            if (Vars.getBuildings().get(i).isDestroyed()) {
+                            rewards.add(new FloatingReward(Vars.getBonusBombPic(),
+                                    Vars.getBuildings().get(i).getPositionX(),
+                                    Vars.getBuildings().get(i).getPositionY(),
+                                    Vars.getBuildings().get(i).getBon()));
+                            Vars.getBuildings().remove(i);
+//                            }
                             g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
                         }
                         g2d.drawImage(Vars.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
@@ -115,14 +161,18 @@ public class Board extends JPanel implements ActionListener {
             }
         }
         for (int i = vehicles.size() - 1; i > -1; i--) {
-            if (vehicles.get(i).isDying()) {
-                vehicles.remove(i);
-            } else {
-                drawObj(g2d, vehicles.get(i));
-            }
+//            if (vehicles.get(i).isDying()) {
+//                vehicles.remove(i);
+//            } else {
+            drawObj(g2d, vehicles.get(i));
+//            }
         }
 
         drawObj(g2d, plane);
+
+//        for (int i = 0; i < Vars.getBuildings().size(); i++){
+//            drawObj(g2d, Vars.getBuildings().get(i));
+//        }
 
 //        for (int i = 0; i < vehicles.size(); i++) {
 //            if (!vehicles.get(i).isDying()) {
@@ -186,7 +236,16 @@ public class Board extends JPanel implements ActionListener {
     private void drawObj(Graphics2D g2d, Vehicle obj) {
         g2d.drawImage(obj.getPicture(), obj.getPositionX(), obj.getPositionY(), this);
     }
+
     private void drawObj(Graphics2D g2d, PlaneBuilder obj) {
+        g2d.drawImage(obj.getPicture(), obj.getPositionX(), obj.getPositionY(), this);
+    }
+
+    private void drawObj(Graphics2D g2d, Building obj) {
+        g2d.drawImage(obj.getPicture(), obj.getPositionX(), obj.getPositionY(), this);
+    }
+
+    private void drawObj(Graphics2D g2d, FloatingReward obj) {
         g2d.drawImage(obj.getPicture(), obj.getPositionX(), obj.getPositionY(), this);
     }
 
@@ -284,20 +343,20 @@ public class Board extends JPanel implements ActionListener {
                     plane.setSpeedX(0);
 
                 } else if (key == KeyEvent.VK_Q) {
-                    plane.setSpeedY(-plane.getSpeed());
-                    plane.setSpeedX(-plane.getSpeed());
+                    plane.setSpeedY(-plane.getSpeed() + 1);
+                    plane.setSpeedX(-plane.getSpeed() + 1);
                     plane.setPlanePic(plane.getPlaneleftup());
                 } else if (key == KeyEvent.VK_E) {
-                    plane.setSpeedY(-plane.getSpeed());
-                    plane.setSpeedX(plane.getSpeed());
+                    plane.setSpeedY(-plane.getSpeed() + 1);
+                    plane.setSpeedX(plane.getSpeed() - 1);
                     plane.setPlanePic(plane.getPlanerightup());
                 } else if (key == KeyEvent.VK_A) {
-                    plane.setSpeedY(plane.getSpeed());
-                    plane.setSpeedX(-plane.getSpeed());
+                    plane.setSpeedY(plane.getSpeed() - 1);
+                    plane.setSpeedX(-plane.getSpeed() + 1);
                     plane.setPlanePic(plane.getPlanedownleft());
                 } else if (key == KeyEvent.VK_D) {
-                    plane.setSpeedY(plane.getSpeed());
-                    plane.setSpeedX(plane.getSpeed());
+                    plane.setSpeedY(plane.getSpeed() - 1);
+                    plane.setSpeedX(plane.getSpeed() - 1);
                     plane.setPlanePic(plane.getPlanedownright());
                 }
 
@@ -318,6 +377,7 @@ public class Board extends JPanel implements ActionListener {
             } else {
                 if (key == 's' || key == 'S' || key == KeyEvent.VK_SPACE) {
                     inGame = true;
+
 //                    initGame();
                 }
             }

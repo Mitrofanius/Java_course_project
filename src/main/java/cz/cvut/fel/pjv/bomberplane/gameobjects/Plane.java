@@ -16,6 +16,15 @@ public class Plane extends PlaneBuilder {
 
     private int numberOfKills;
     private int numOfConcurrentBombsToDrop = 5;
+
+    public int getNumOfConcurrentBombsToDrop() {
+        return numOfConcurrentBombsToDrop;
+    }
+
+    public void setNumOfConcurrentBombsToDrop(int numOfConcurrentBombsToDrop) {
+        this.numOfConcurrentBombsToDrop = numOfConcurrentBombsToDrop;
+    }
+
     private long startTime;
 
 //    public boolean isDying() {
@@ -39,7 +48,7 @@ public class Plane extends PlaneBuilder {
 
     private LinkedList<Missile> bombs;
 
-    public Plane(int speed, int dir) {
+    public Plane(int speed, int dir, int numOfBombs) {
         this.setSpeed(speed);
         this.setSpeedX(speed);
         this.setSpeedY(0);
@@ -47,6 +56,7 @@ public class Plane extends PlaneBuilder {
         this.setPositionX(0);
         this.setPositionY(0);
         bombs = new LinkedList<>();
+        numOfConcurrentBombsToDrop = numOfBombs;
         loadImages();
     }
 

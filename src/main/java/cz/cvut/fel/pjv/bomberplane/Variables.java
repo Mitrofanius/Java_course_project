@@ -1,5 +1,6 @@
 package cz.cvut.fel.pjv.bomberplane;
 
+import cz.cvut.fel.pjv.bomberplane.gameobjects.Building;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -7,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 //import org.apache.commons.io.IOUtils;
 
 
@@ -14,6 +16,10 @@ public class Variables {
     public Image getBombPic() {
         return bombPic;
     }
+
+    private int i;
+
+    private int numOfCurrentBombsToDrop;
 
     public Image getExplosionPic() {
         return explosionPic;
@@ -24,6 +30,18 @@ public class Variables {
     private int trucks;
     private int tanks;
     private int jeeps;
+    private int numBuildings;
+
+    public int getNumOfCurrentBombsToDrop() {
+        return numOfCurrentBombsToDrop;
+    }
+
+    public LinkedList<Building> getBuildings() {
+        return buildings;
+    }
+
+    private LinkedList<Building> buildings = new LinkedList<Building>();
+
     private Image jeepPic, truckPicLeft, tankPicLeft,
             tankPicUp, tankPicRight, bombPic, truckPicRight,
             explosionPic, houseRedPic, houseWhitePic, bonusBombPic;
@@ -81,27 +99,40 @@ public class Variables {
         return jeepPic;
     }
 
-    public Variables(){
+    public Variables() {
 //        initVariables();
         loadPics();
     }
 
-    public void init_level(int num){
+    public void init_level(int num) {
         fromJson = read_file("JsonFiles\\level_1.json");
         System.out.println(fromJson);
 //        parseJson(fromJson);
+        JSONObject temp;
         JSONObject o = new JSONObject(fromJson);
+        JSONArray static_objs = o.getJSONArray("buildings");
+        for (i = 0; i < static_objs.length(); i++) {
+            temp = static_objs.getJSONObject(i);
+            if (temp.getString("colour").equals("white")) {
+                buildings.add(new Building(houseWhitePic, temp.getInt("xPos"), temp.getInt("yPos"), temp.getString("bonus")));
+            }
+            else {
+                buildings.add(new Building(houseRedPic, temp.getInt("xPos"), temp.getInt("yPos"), temp.getString("bonus")));
+            }
+        }
 
         setTanks(o.getInt("numTanks"));
         setTrucks(o.getInt("numTrucks"));
         setJeeps(o.getInt("numJeeps"));
+        numOfCurrentBombsToDrop = o.getInt("numOfCurrentBombsToDrop");
+
     }
 
-    public void parseJson(String input){
-        JSONObject o = new JSONObject(input);
-//        JSONObject level = o.getJSONObject("level");
-        System.out.println("\n\n\n" + "This is the level " + o.getInt("level"));
-    }
+//    public void parseJson(String input) {
+//        JSONObject o = new JSONObject(input);
+////        JSONObject level = o.getJSONObject("level");
+//        System.out.println("\n\n\n" + "This is the level " + o.getInt("level"));
+//    }
 
     public Image getTruckPicLeft() {
         return truckPicLeft;
@@ -111,7 +142,7 @@ public class Variables {
         return tankPicLeft;
     }
 
-    public String read_file (String arg) {
+    public String read_file(String arg) {
         String everything = null;
         FileInputStream inputStream = null;
         try {
@@ -137,7 +168,7 @@ public class Variables {
         return everything;
     }
 
-    private void loadPics(){
+    private void loadPics() {
         jeepPic = new ImageIcon("Pictures\\jeep2.png").getImage();
         truckPicLeft = new ImageIcon("Pictures\\truck_left.png").getImage();
         truckPicRight = new ImageIcon("Pictures\\truck_right.png").getImage();
