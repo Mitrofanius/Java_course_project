@@ -1,10 +1,10 @@
 {
-  "level": 1,
-  "numTanks": 1,
-  "numTrucks": 2,
+  "level": 2,
+  "numTanks": 3,
+  "numTrucks": 3,
   "numJeeps": 2,
-  "numOfCurrentBombsToDrop": 5,
-  "reachLineHeight": 200,
+  "numOfCurrentBombsToDrop": 1,
+  "reachLineHeight": 180,
   "hills": [
     {
       "x": 500,
@@ -18,11 +18,11 @@
     }
   ],
   "buildings": [
-    {"colour": "red",
-    "xPos": 300,
-    "yPos": 300,
-    "bonus": "PLUSBOMB"},
     {"colour": "white",
+      "xPos": 400,
+      "yPos": 300,
+      "bonus": "PLUSBOMB"},
+    {"colour": "red",
       "xPos": 100,
       "yPos": 300,
       "bonus": "PLUSBOMB"}

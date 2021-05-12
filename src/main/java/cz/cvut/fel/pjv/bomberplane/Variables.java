@@ -19,18 +19,23 @@ public class Variables {
 
     private int i;
 
-    private int numOfCurrentBombsToDrop;
+    private int numOfCurrentBombsToDrop = 0;
 
     public Image getExplosionPic() {
         return explosionPic;
     }
 
     String fromJson;
-    private int level;
+    private int level = 1;
     private int trucks;
     private int tanks;
     private int jeeps;
     private int numBuildings;
+    private static int reachLineHeight;
+
+    public static int getReachLineHeight() {
+        return reachLineHeight;
+    }
 
     public int getNumOfCurrentBombsToDrop() {
         return numOfCurrentBombsToDrop;
@@ -44,7 +49,14 @@ public class Variables {
 
     private Image jeepPic, truckPicLeft, tankPicLeft,
             tankPicUp, tankPicRight, bombPic, truckPicRight,
-            explosionPic, houseRedPic, houseWhitePic, bonusBombPic;
+            explosionPic, houseRedPic, houseWhitePic, bonusBombPic,
+            atomicBombPic, bombScorePic, lifePic;
+
+    private static Image bulletPic;
+
+    public static Image getBulletPic() {
+        return bulletPic;
+    }
 
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -104,8 +116,10 @@ public class Variables {
         loadPics();
     }
 
-    public void init_level(int num) {
-        fromJson = read_file("JsonFiles\\level_1.json");
+    public void loadLevelInfo(int num) {
+        level = num;
+        String lvlFile = "level_" + num + ".json";
+        fromJson = read_file(("JsonFiles\\" + lvlFile));
         System.out.println(fromJson);
 //        parseJson(fromJson);
         JSONObject temp;
@@ -124,8 +138,10 @@ public class Variables {
         setTanks(o.getInt("numTanks"));
         setTrucks(o.getInt("numTrucks"));
         setJeeps(o.getInt("numJeeps"));
-        numOfCurrentBombsToDrop = o.getInt("numOfCurrentBombsToDrop");
-
+        reachLineHeight = o.getInt("reachLineHeight");
+        if (numOfCurrentBombsToDrop == 0) {
+            numOfCurrentBombsToDrop = o.getInt("numOfCurrentBombsToDrop");
+        }
     }
 
 //    public void parseJson(String input) {
@@ -180,6 +196,22 @@ public class Variables {
         houseRedPic = new ImageIcon("Pictures\\house_red.png").getImage();
         houseWhitePic = new ImageIcon("Pictures\\house_white.png").getImage();
         bonusBombPic = new ImageIcon("Pictures\\bonus.png").getImage();
+        atomicBombPic = new ImageIcon("Pictures\\AtomicBomb.png").getImage();
+        bombScorePic = new ImageIcon("Pictures\\bombScore.png").getImage();
+        lifePic = new ImageIcon("Pictures\\life.png").getImage();
+        bulletPic = new ImageIcon("Pictures\\bullet.png").getImage();
+    }
+
+    public Image getAtomicBombPic() {
+        return atomicBombPic;
+    }
+
+    public Image getBombScorePic() {
+        return bombScorePic;
+    }
+
+    public Image getLifePic() {
+        return lifePic;
     }
 
     public Image getTankPicUp() {

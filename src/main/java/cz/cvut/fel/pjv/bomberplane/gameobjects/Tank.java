@@ -1,6 +1,7 @@
 package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
+import cz.cvut.fel.pjv.bomberplane.Variables;
 
 import java.awt.*;
 
@@ -11,6 +12,7 @@ import java.awt.*;
  */
 public class Tank extends Vehicle {
     Image picUp;
+
 
     int[] map = new int[650];
 
@@ -98,6 +100,10 @@ public class Tank extends Vehicle {
 
     @Override
     public void shoot() {
-        // TODO
+        setBullet(new Bullet(getPositionX(), getPositionY(), getSpeedX(), Variables.getBulletPic()));
+    }
+    @Override
+    public boolean isTank(){
+        return  true;
     }
 }

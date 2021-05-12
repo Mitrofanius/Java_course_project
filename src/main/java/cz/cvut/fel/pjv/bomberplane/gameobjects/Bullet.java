@@ -1,6 +1,7 @@
 package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
+import cz.cvut.fel.pjv.bomberplane.Variables;
 
 import java.awt.*;
 
@@ -9,7 +10,7 @@ import java.awt.*;
  * in a shoot method of Plane class
  * and then interact with other vehicles
  */
-public class Missile {
+public class Bullet {
     private int firepower;
     private int positionX;
     private int positionY;
@@ -17,7 +18,7 @@ public class Missile {
     private boolean explosion = false;
 
     private int speedX;
-    private int speedY = 5;
+    private int speedY = 4;
 
     public int getFirepower() {
         return firepower;
@@ -48,7 +49,7 @@ public class Missile {
     }
 
     private boolean Atomic;
-    private boolean active;
+    private boolean active = false;
 
     public boolean isActive() {
         return active;
@@ -58,10 +59,10 @@ public class Missile {
         return explosion;
     }
 
-    public Missile(int x, int y, int speed, Image pic) {
+    public Bullet(int x, int y, int speed, Image pic) {
         active = true;
         positionX = x + 15;
-        positionY = y + 15;
+        positionY = y;
 //        speedX = speed - speed / 3;
         speedX = speed;
         picture = pic;
@@ -69,9 +70,9 @@ public class Missile {
 
     public void move() {
         positionX += speedX;
-        positionY += speedY;
-        if (positionY >= 310) {
-            explosion = true;
+        positionY -= speedY;
+        if (positionY <= Variables.getReachLineHeight()) {
+//            explosion = true;
             active = false;
         }
         if (positionX >= Main.panelWidth - 5) {

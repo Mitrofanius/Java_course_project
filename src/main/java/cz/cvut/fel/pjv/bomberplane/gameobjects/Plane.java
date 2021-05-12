@@ -14,8 +14,8 @@ import java.util.Set;
  */
 public class Plane extends PlaneBuilder {
 
-    private int numberOfKills;
-    private int numOfConcurrentBombsToDrop = 5;
+    private int numberOfKills = 0;
+    private int numOfConcurrentBombsToDrop;
 
     public int getNumOfConcurrentBombsToDrop() {
         return numOfConcurrentBombsToDrop;
@@ -38,8 +38,8 @@ public class Plane extends PlaneBuilder {
 //    private long elapsedTime = 0L;
 //    private boolean dying = false;
 
-    private int numberOfLives;
-    private int numOfAtomicBombs;
+    private int numberOfLives = 1;
+    private int numOfAtomicBombs = 0;
     private int transferOffset = 50;
     private Image planeleft, planerigth,
             planeleftup, planerightup,

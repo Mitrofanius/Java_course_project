@@ -10,7 +10,26 @@ import java.awt.*;
  */
 public abstract class Vehicle {
     private Image picture;
+
+    public void setBullet(Bullet bullet) {
+        this.bullet = bullet;
+    }
+
+    public void setBulletActive(boolean bulletActive) {
+        this.bulletActive = bulletActive;
+    }
+
     Image picLeft, picRight;
+    Bullet bullet = null;
+    boolean bulletActive = false;
+
+    public Bullet getBullet() {
+        return bullet;
+    }
+
+    public boolean isBulletActive() {
+        return bulletActive;
+    }
 
     public Image getPicLeft() {
         return picLeft;
@@ -183,5 +202,8 @@ public abstract class Vehicle {
             return;
         }
         setPicture(getPicRight());
+    }
+    public boolean isTank(){
+        return false;
     }
 }
