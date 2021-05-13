@@ -1,6 +1,7 @@
 package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
+import cz.cvut.fel.pjv.bomberplane.Model;
 
 import java.awt.*;
 
@@ -9,10 +10,10 @@ import java.awt.*;
  * in a shoot method of Plane class
  * and then interact with other vehicles
  */
-public class Missile {
+public class Missile extends MainGameObj{
     private int firepower;
-    private int positionX;
-    private int positionY;
+//    private int positionX;
+//    private int positionY;
     private Image picture;
     private boolean explosion = false;
 
@@ -23,13 +24,13 @@ public class Missile {
         return firepower;
     }
 
-    public int getPositionX() {
-        return positionX;
-    }
-
-    public int getPositionY() {
-        return positionY;
-    }
+//    public int getPositionX() {
+//        return positionX;
+//    }
+//
+//    public int getPositionY() {
+//        return positionY;
+//    }
 
     public Image getPicture() {
         return picture;
@@ -60,25 +61,25 @@ public class Missile {
 
     public Missile(int x, int y, int speed, Image pic) {
         active = true;
-        positionX = x + 15;
-        positionY = y + 15;
+        setPositionX(x + 15);
+        setPositionY(y + 15);
 //        speedX = speed - speed / 3;
         speedX = speed;
         picture = pic;
     }
 
     public void move() {
-        positionX += speedX;
-        positionY += speedY;
-        if (positionY >= 310) {
+        setPositionX(getPositionX() + speedX);
+        setPositionY(getPositionY() + speedY);
+        if (getPositionY() >= 310) {
             explosion = true;
             active = false;
         }
-        if (positionX >= Main.panelWidth - 5) {
-            positionX = 0;
+        if (getPositionX() >= Model.width - 5) {
+            setPositionX(0);
         }
-        else if (positionX <= 0) {
-            positionX = Main.panelWidth - 6;
+        else if (getPositionX() <= 0) {
+            setPositionX(Model.width - 6);
         }
     }
 

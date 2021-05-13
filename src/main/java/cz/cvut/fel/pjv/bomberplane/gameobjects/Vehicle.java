@@ -2,14 +2,15 @@ package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 
 import cz.cvut.fel.pjv.bomberplane.Main;
+import cz.cvut.fel.pjv.bomberplane.Model;
 
 import java.awt.*;
 
 /**
  * Abstract class which is extended by player's plane class and enemy's vehicles
  */
-public abstract class Vehicle {
-    private Image picture;
+public abstract class Vehicle extends MainGameObj{
+//    private Image picture;
 
     public void setBullet(Bullet bullet) {
         this.bullet = bullet;
@@ -69,16 +70,16 @@ public abstract class Vehicle {
 
     int defaultSpeed;
 
-    public Image getPicture() {
-        return picture;
-    }
+//    public Image getPicture() {
+//        return picture;
+//    }
+//
+//    public void setPicture(Image picture) {
+//        this.picture = picture;
+//    }
 
-    public void setPicture(Image picture) {
-        this.picture = picture;
-    }
-
-    private int positionX;
-    private int positionY;
+//    private int positionX;
+//    private int positionY;
     private int radius;
     private int speedX, speedY;
     private boolean dying = false;
@@ -131,22 +132,22 @@ public abstract class Vehicle {
     public int getDir() {
         return dir;
     }
-
-    public void setPositionX(int positionX) {
-        this.positionX = positionX;
-    }
-
-    public int getPositionX() {
-        return positionX;
-    }
-
-    public void setPositionY(int positionY) {
-        this.positionY = positionY;
-    }
-
-    public int getPositionY() {
-        return positionY;
-    }
+//
+//    public void setPositionX(int positionX) {
+//        this.positionX = positionX;
+//    }
+//
+//    public int getPositionX() {
+//        return positionX;
+//    }
+//
+//    public void setPositionY(int positionY) {
+//        this.positionY = positionY;
+//    }
+//
+//    public int getPositionY() {
+//        return positionY;
+//    }
 
     public void shoot() {
     }
@@ -183,7 +184,7 @@ public abstract class Vehicle {
 
         this.setPositionX(this.getPositionX() + this.getSpeedX());
         this.setPositionY(this.getPositionY() + this.getSpeedY());
-        if ((this.getPositionX() + 3 * transferOffset) >= Main.panelWidth) {
+        if ((this.getPositionX() + 3 * transferOffset) >= Model.width) {
             this.setSpeedX(-this.getSpeedX());
             changeDirPic();
         }

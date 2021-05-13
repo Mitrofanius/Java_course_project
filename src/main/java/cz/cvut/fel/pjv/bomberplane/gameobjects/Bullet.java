@@ -1,7 +1,7 @@
 package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
-import cz.cvut.fel.pjv.bomberplane.Variables;
+import cz.cvut.fel.pjv.bomberplane.Model;
 
 import java.awt.*;
 
@@ -49,7 +49,7 @@ public class Bullet {
     }
 
     private boolean Atomic;
-    private boolean active = false;
+    private boolean active;
 
     public boolean isActive() {
         return active;
@@ -63,7 +63,6 @@ public class Bullet {
         active = true;
         positionX = x + 15;
         positionY = y;
-//        speedX = speed - speed / 3;
         speedX = speed;
         picture = pic;
     }
@@ -71,15 +70,14 @@ public class Bullet {
     public void move() {
         positionX += speedX;
         positionY -= speedY;
-        if (positionY <= Variables.getReachLineHeight()) {
-//            explosion = true;
+        if (positionY <= Model.getReachLineHeight()) {
             active = false;
         }
-        if (positionX >= Main.panelWidth - 5) {
+        if (positionX >= Model.width - 5) {
             positionX = 0;
         }
         else if (positionX <= 0) {
-            positionX = Main.panelWidth - 6;
+            positionX = Model.width - 6;
         }
     }
 

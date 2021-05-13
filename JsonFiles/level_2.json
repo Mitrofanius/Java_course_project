@@ -4,7 +4,7 @@
   "numTrucks": 3,
   "numJeeps": 2,
   "numOfCurrentBombsToDrop": 1,
-  "reachLineHeight": 180,
+  "reachLineHeight": 150,
   "hills": [
     {
       "x": 500,

@@ -1,6 +1,7 @@
 package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 import cz.cvut.fel.pjv.bomberplane.Main;
+import cz.cvut.fel.pjv.bomberplane.Model;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +14,12 @@ import java.util.Set;
  * Plane object to be controlled by a user
  */
 public class Plane extends PlaneBuilder {
+
+    private int speedDiagonal = 3;
+
+    public int getSpeedDiagonal() {
+        return speedDiagonal;
+    }
 
     private int numberOfKills = 0;
     private int numOfConcurrentBombsToDrop;
@@ -27,16 +34,16 @@ public class Plane extends PlaneBuilder {
 
     private long startTime;
 
-//    public boolean isDying() {
-//        return dying;
-//    }
-//
-//    public void setDying(boolean dying) {
-//        this.dying = dying;
-//    }
-//
-//    private long elapsedTime = 0L;
-//    private boolean dying = false;
+    public boolean isDying() {
+        return dying;
+    }
+
+    public void setDying(boolean dying) {
+        this.dying = dying;
+    }
+
+    private long elapsedTime = 0L;
+    private boolean dying = false;
 
     private int numberOfLives = 1;
     private int numOfAtomicBombs = 0;
@@ -58,6 +65,7 @@ public class Plane extends PlaneBuilder {
         bombs = new LinkedList<>();
         numOfConcurrentBombsToDrop = numOfBombs;
         loadImages();
+        setPicture(planerigth);
     }
 
     public LinkedList<Missile> getBombs() {
@@ -66,7 +74,7 @@ public class Plane extends PlaneBuilder {
 
     public void shoot() {
         if (numOfConcurrentBombsToDrop > bombs.size()) {
-            startTime = System.currentTimeMillis();
+//            startTime = System.currentTimeMillis();
             bombs.add(new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic()));
         }
     }
@@ -92,11 +100,11 @@ public class Plane extends PlaneBuilder {
     public void move() {
         this.setPositionX(this.getPositionX() + this.getSpeedX());
         this.setPositionY(this.getPositionY() + this.getSpeedY());
-        if ((this.getPositionX() + transferOffset - transferOffset / 3) >= Main.panelWidth) {
+        if ((this.getPositionX() + transferOffset - transferOffset / 3) >= Model.width) {
             this.setPositionX(-transferOffset + 1);
         }
         if ((this.getPositionX() + transferOffset) <= 0) {
-            this.setPositionX(Main.panelWidth - transferOffset - 1);
+            this.setPositionX(Model.width - transferOffset - 1);
         }
         if ((this.getPositionY() < 0)) {
             this.setSpeedY(this.getSpeed());
