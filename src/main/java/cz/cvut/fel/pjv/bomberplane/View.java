@@ -6,10 +6,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class View extends JPanel {
-    private int levelCounterTimeShow;
     private Color myColor = new Color(16, 174, 187, 129);
     private final Font smallFont = new Font("Helvetica", Font.BOLD, 14);
     private final Font bigFont = new Font("Helvetica", Font.BOLD, 24);
+    private int menuCoordX = 45;
 
     Model gameModel;
 
@@ -30,7 +30,17 @@ public class View extends JPanel {
         g2d.setColor(new Color(19, 177, 19));
         g2d.fillRect(0, 320, gameModel.width, gameModel.height);
 
-        drawGame(g2d);
+        if (Controller.isInGame()) {
+            drawGame(g2d);
+        } else if (Controller.isInIntro()) {
+            showIntroScreen(g2d);
+        } else if (Controller.isInPause()) {
+            drawGame(g2d);
+            showPauseScreen(g2d);
+        } else if (Controller.isInOutro()) {
+            drawGame(g2d);
+            showOutroScreen(g2d);
+        }
 
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
@@ -43,7 +53,7 @@ public class View extends JPanel {
         }
 
         drawHills(g2d);
-        if (levelCounterTimeShow < 50){
+        if (gameModel.getLevelCounterTimeShow() < 50) {
             drawLevelNumber(g2d);
         }
 
@@ -60,7 +70,7 @@ public class View extends JPanel {
 
             drawObj(g2d, gameModel.getVehicles().get(i));
         }
-        doShootingDraw(g2d);
+        drawBullets(g2d);
 
         drawScore(g2d);
 
@@ -85,28 +95,54 @@ public class View extends JPanel {
 
     private void showIntroScreen(Graphics2D g2d) {
         g2d.setColor(new Color(16, 92, 130));
-        g2d.fillRect(50, gameModel.width / 2 - 30, gameModel.width - 100, 50);
+        g2d.fillRect(0, 0, gameModel.width, gameModel.height);
+        g2d.setColor(new Color(16, 92, 130));
+        g2d.fillRect(menuCoordX, gameModel.height / 2 - 30, gameModel.width - 100, 50);
         g2d.setColor(Color.white);
-        g2d.drawRect(50, gameModel.width / 2 - 30, gameModel.width - 100, 50);
+        g2d.drawRect(menuCoordX, gameModel.height / 2 - 30, gameModel.width - 100, 50);
 
-        String s = "Press space to start a new Game";
+        String s = "Press \"Space\" to start a new Game";
         FontMetrics metr = this.getFontMetrics(bigFont);
 
         g2d.setColor(Color.white);
         g2d.setFont(bigFont);
-        g2d.drawString(s, gameModel.width / 2 - 190, (gameModel.width) / 2);
+        g2d.drawString(s, gameModel.width / 2 - 210, (gameModel.height) / 2);
 
         g2d.setColor(new Color(16, 92, 130));
-        g2d.fillRect(50, gameModel.width / 2 + 20, gameModel.width - 100, 50);
+        g2d.fillRect(menuCoordX, gameModel.height / 2 + 20, gameModel.width - 100, 50);
         g2d.setColor(Color.white);
-        g2d.drawRect(50, gameModel.width / 2 + 20, gameModel.width - 100, 50);
-        s = "Continue your previous Game";
-        g2d.drawString(s, gameModel.width / 2 - 190, (gameModel.width) / 2 + 50);
+        g2d.drawRect(menuCoordX, gameModel.height / 2 + 20, gameModel.width - 100, 50);
+        s = "Press \"C\" to continue your previous Game";
+        g2d.drawString(s, gameModel.width / 2 - 245, (gameModel.height) / 2 + 50);
+    }
 
+    private void showPauseScreen(Graphics2D g2d) {
+
+        String s = "Game Paused";
+
+        g2d.setColor(Color.white);
+        g2d.setFont(bigFont);
+        g2d.drawString(s, gameModel.width / 2 - 90, (gameModel.height) / 2 - 50);
+
+        g2d.setColor(new Color(16, 92, 130));
+        g2d.fillRect(50, gameModel.height / 2 - 30, gameModel.width - 100, 50);
+        g2d.setColor(Color.white);
+        g2d.drawRect(50, gameModel.height / 2 - 30, gameModel.width - 100, 50);
+
+        s = "Press \"Esc\" to exit";
+        g2d.setFont(bigFont);
+        g2d.drawString(s, gameModel.width / 2 - 120, (gameModel.height) / 2);
+
+        g2d.setColor(new Color(16, 92, 130));
+        g2d.fillRect(50, gameModel.height / 2 + 20, gameModel.width - 100, 50);
+        g2d.setColor(Color.white);
+        g2d.drawRect(50, gameModel.height / 2 + 20, gameModel.width - 100, 50);
+        s = "Press \"Space\" to continue";
+        g2d.drawString(s, gameModel.width / 2 - 150, (gameModel.height) / 2 + 50);
     }
 
     private void showOutroScreen(Graphics2D g2d) {
-        gameModel.setInGame(false);
+        Controller.setInGame(false);
         g2d.setColor(new Color(16, 92, 130));
         g2d.fillRect(50, gameModel.height / 2 - 30, gameModel.width - 100, 50);
         g2d.setColor(Color.white);
@@ -128,7 +164,7 @@ public class View extends JPanel {
         g2d.setColor(Color.white);
 
         g2d.drawImage(gameModel.getBombScorePic(), 0, 2, this);
-        s = "x" + gameModel.getNumOfConcurrentBombsToDrop();
+        s = "x" + gameModel.getPlane().getNumOfConcurrentBombsToDrop();
         g2d.drawString(s, 14, 16);
 
         g2d.drawImage(gameModel.getAtomicBombPic(), 30, 0, this);
@@ -138,6 +174,10 @@ public class View extends JPanel {
         g2d.drawImage(gameModel.getLifePic(), 66, 0, this);
         s = "x" + gameModel.getPlane().getNumberOfLives();
         g2d.drawString(s, 92, 16);
+
+        g2d.drawImage(gameModel.getSkullPic(), 108, 4, this);
+        s = "x" + gameModel.getPlane().getNumberOfKills();
+        g2d.drawString(s, 122, 16);
 
     }
 
@@ -168,14 +208,9 @@ public class View extends JPanel {
         }
     }
 
-    private void doShootingDraw(Graphics2D g2d) {
-        for (int i = gameModel.getVehicles().size() - 1; i > -1; i--) {
-            if (gameModel.getVehicles().get(i).isTank()) {
-                if ((gameModel.getVehicles().get(i).getBullet() != null)
-                        && gameModel.getVehicles().get(i).getBullet().isActive()) {
-                    drawObj(g2d, gameModel.getVehicles().get(i).getBullet());
-                }
-            }
+    private void drawBullets(Graphics2D g2d) {
+        for (int i = 0; i < gameModel.getBullets().size(); i++) {
+            drawObj(g2d, gameModel.getBullets().get(i));
         }
     }
 
@@ -185,7 +220,7 @@ public class View extends JPanel {
         g2d.setColor(Color.white);
         s = "Level " + (gameModel.getLevel());
         g2d.drawString(s, gameModel.width / 2 - 50, 100);
-        levelCounterTimeShow += 1;
+        gameModel.setLevelCounterTimeShow(gameModel.getLevelCounterTimeShow() + 1);
     }
 
 

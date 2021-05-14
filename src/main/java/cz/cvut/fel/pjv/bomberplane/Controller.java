@@ -9,10 +9,54 @@ import java.awt.event.KeyEvent;
 public class Controller extends JFrame implements ActionListener {
 
     private Timer timer;
-    private boolean inGame = true;
+    private static boolean inGame = false;
+    private static boolean inIntro = true;
+    private static boolean inOutro = false;
+    private static boolean inMenu = false;
+    private static boolean inPause = false;
+
+    public static boolean isInPause() {
+        return inPause;
+    }
+
+    public static void setInPause(boolean inPause) {
+        Controller.inPause = inPause;
+    }
+
+    public static boolean isInGame() {
+        return inGame;
+    }
+
+    public static boolean isInIntro() {
+        return inIntro;
+    }
+
+    public static void setInGame(boolean inGame) {
+        Controller.inGame = inGame;
+    }
+
+    public static void setInIntro(boolean inIntro) {
+        Controller.inIntro = inIntro;
+    }
+
+    public static void setInOutro(boolean inOutro) {
+        Controller.inOutro = inOutro;
+    }
+
+    public static void setInMenu(boolean inMenu) {
+        Controller.inMenu = inMenu;
+    }
+
+    public static boolean isInOutro() {
+        return inOutro;
+    }
+
+    public static boolean isInMenu() {
+        return inMenu;
+    }
+
     View gameView;
     Model gameModel;
-    View menuView;
 
 
     public Controller() {
@@ -35,7 +79,8 @@ public class Controller extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        gameModel.playGame();
+        if (inGame)
+            gameModel.playGame();
         gameView.drawView();
     }
 
@@ -108,20 +153,38 @@ public class Controller extends JFrame implements ActionListener {
                     gameModel.planeShoot();
                 } else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
                     inGame = false;
-                } else if (key == KeyEvent.VK_P) {
+                } else if (key == KeyEvent.VK_SPACE) {
                     if (timer.isRunning()) {
-                        timer.stop();
+                        inGame = false;
+                        inPause = true;
                     } else {
-                        timer.start();
+                        inGame = true;
                     }
                 }
 
-            }else{
-
+            } else {
+                if (inIntro && key == KeyEvent.VK_SPACE) {
+                    inIntro = false;
+                    inGame = true;
+                    gameModel.getPlane().setNumberOfLives(3);
+                    gameModel.getPlane().setDying(true);
+                }
+                else if (inIntro && key == KeyEvent.VK_C){
+//                    TODO
+                }
+                if (inPause && key == KeyEvent.VK_SPACE) {
+                    inPause = false;
+                    inGame = true;
+                }
+                if (inPause && key == KeyEvent.VK_ESCAPE){
+                    inPause = false;
+                    inIntro = true;
+                }
             }
-            if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
-                inGame = false;
-            }
+//            if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
+//                inGame = false;
+//                in
+//            }
         }
 
         @Override

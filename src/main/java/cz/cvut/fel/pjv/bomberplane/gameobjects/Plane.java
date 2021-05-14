@@ -22,7 +22,7 @@ public class Plane extends PlaneBuilder {
     }
 
     private int numberOfKills = 0;
-    private int numOfConcurrentBombsToDrop;
+    private int numOfConcurrentBombsToDrop = 0;
 
     public int getNumOfConcurrentBombsToDrop() {
         return numOfConcurrentBombsToDrop;
@@ -32,8 +32,6 @@ public class Plane extends PlaneBuilder {
         this.numOfConcurrentBombsToDrop = numOfConcurrentBombsToDrop;
     }
 
-    private long startTime;
-
     public boolean isDying() {
         return dying;
     }
@@ -42,10 +40,18 @@ public class Plane extends PlaneBuilder {
         this.dying = dying;
     }
 
+    public void setNumberOfLives(int numberOfLives) {
+        this.numberOfLives = numberOfLives;
+    }
+
+    public void setNumberOfKills(int numberOfKills) {
+        this.numberOfKills = numberOfKills;
+    }
+
     private long elapsedTime = 0L;
     private boolean dying = false;
 
-    private int numberOfLives = 1;
+    private int numberOfLives = 2;
     private int numOfAtomicBombs = 0;
     private int transferOffset = 50;
     private Image planeleft, planerigth,
@@ -74,7 +80,6 @@ public class Plane extends PlaneBuilder {
 
     public void shoot() {
         if (numOfConcurrentBombsToDrop > bombs.size()) {
-//            startTime = System.currentTimeMillis();
             bombs.add(new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic()));
         }
     }
@@ -90,10 +95,6 @@ public class Plane extends PlaneBuilder {
             }
         }
         return bombs.size();
-    }
-
-    public void removeBomb(Missile obj){
-        bombs.remove(obj);
     }
 
     @Override
@@ -155,6 +156,10 @@ public class Plane extends PlaneBuilder {
 
     public Image getPlaneleftup() {
         return planeleftup;
+    }
+
+    public void setBombs(LinkedList<Missile> bombs) {
+        this.bombs = bombs;
     }
 
     public Image getPlanerightup() {

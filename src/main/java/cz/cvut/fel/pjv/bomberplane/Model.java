@@ -22,8 +22,12 @@ public class Model {
     public static final int height = 400;
 
     private Image jeepPic, truckPicLeft, tankPicLeft, tankPicUp, tankPicRight, bombPic, truckPicRight, explosionPic,
-            houseRedPic, houseWhitePic, bonusBombPic, atomicBombPic, bombScorePic, lifePic;
+            houseRedPic, houseWhitePic, bonusBombPic, atomicBombPic, bombScorePic, lifePic, skullPic;
     private static Image bulletPic;
+
+    public Image getSkullPic() {
+        return skullPic;
+    }
 
     String fromJson;
     private int level = 1;
@@ -31,7 +35,7 @@ public class Model {
     private int tanks;
     private int jeeps;
     private int numBuildings;
-    private int numOfConcurrentBombsToDrop = 0;
+//    private int numOfConcurrentBombsToDrop = 0;
     private static int reachLineHeight;
 
     private int i;
@@ -42,21 +46,13 @@ public class Model {
     private Truck truck;
     private Tank tank;
     private int speed = 4;
-    private boolean inGame = false;
-
-    public boolean isInGame() {
-        return inGame;
-    }
-
-    public void setInGame(boolean b) {
-        inGame = b;
-    }
 
     private boolean Win = false;
     private int levelCounterTimeShow = 0;
 
     private HashSet<Vehicle> enemies;
     LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
+    LinkedList<Bullet> bullets = new LinkedList<Bullet>();
     LinkedList<FloatingReward> rewards = new LinkedList<FloatingReward>();
     private LinkedList<Building> buildings = new LinkedList<Building>();
 
@@ -65,9 +61,9 @@ public class Model {
     }
 
     private void initBoard() {
+        plane = new Plane(speed, 1, 0);
         loadPics();
         loadLevelInfo(1);
-        plane = new Plane(speed, 1, numOfConcurrentBombsToDrop);
         initLevel();
     }
 
@@ -95,8 +91,8 @@ public class Model {
         trucks = o.getInt("numTrucks");
         jeeps = o.getInt("numJeeps");
         reachLineHeight = o.getInt("reachLineHeight");
-        if (numOfConcurrentBombsToDrop == 0) {
-            numOfConcurrentBombsToDrop = o.getInt("numOfCurrentBombsToDrop");
+        if (plane.getNumOfConcurrentBombsToDrop() == 0) {
+            plane.setNumOfConcurrentBombsToDrop(o.getInt("numOfCurrentBombsToDrop"));
         }
     }
 
@@ -121,7 +117,20 @@ public class Model {
     }
 
     private void death() {
-        inGame = false;
+        if (plane.getNumberOfLives() > 1) {
+            plane.setSpeedX(speed);
+            plane.setSpeedY(0);
+            plane.setDir(1);
+            plane.setPositionX(0);
+            plane.setPositionY(0);
+            plane.setBombs(new LinkedList<>());
+            plane.setNumberOfLives(plane.getNumberOfLives() - 1);
+            plane.setPicture(plane.getPlanerigth());
+            plane.setDying(false);
+        } else {
+            Controller.setInGame(false);
+            Controller.setInIntro(true);
+        }
     }
 
     public void playGame() {
@@ -133,8 +142,9 @@ public class Model {
         plane.move();
         if (plane.getPositionY() >= reachLineHeight - 20) {
             doShooting();
+            moveBullets(bullets);
         } else {
-            doLightShooting();
+            moveBullets(bullets);
         }
 
         moveVehicles();
@@ -151,6 +161,7 @@ public class Model {
 
 
     }
+
 
     private void checkBuildings(Missile bomb) {
         for (int i = buildings.size() - 1; i > -1; i--) {
@@ -169,6 +180,7 @@ public class Model {
             if ((bomb.getPositionX() + 10) > vehicles.get(i).getPositionX()
                     && bomb.getPositionX() - 30 < vehicles.get(i).getPositionX()) {
                 vehicles.remove(i);
+                plane.setNumberOfKills(plane.getNumberOfKills() + 1);
             }
         }
     }
@@ -182,20 +194,24 @@ public class Model {
         }
     }
 
+    private void loadLastGame(){
+
+    }
+
+    private void saveCurrentGame(){
+        
+    }
 
     private void startNextLevel() {
         String s;
-//        g2d.setFont(smallFont);
-//        g2d.setColor(Color.white);
+
         s = "JsonFiles\\level_" + (level + 1) + ".json";
         File check = new File(s);
         if (!check.isFile()) {
             Win = true;
             System.out.println(s);
-//            showOutroScreen(g2d);
             return;
         }
-//        g2d.drawString(s, width / 2 - 50, 100);
         loadLevelInfo(level + 1);
         initLevel();
     }
@@ -211,10 +227,6 @@ public class Model {
 
     public Image getHouseRedPic() {
         return houseRedPic;
-    }
-
-    public int getNumOfConcurrentBombsToDrop() {
-        return numOfConcurrentBombsToDrop;
     }
 
     public Image getHouseWhitePic() {
@@ -250,10 +262,16 @@ public class Model {
                     && (rewards.get(i).getPositionY() >= plane.getPositionY() - 20))) {
                 rewards.get(i).setCaught(true);
                 if (rewards.get(i).getBenefit().equals(Bonus.PLUSBOMBS)) {
+                    System.out.println("ldnwj");
                     plane.setNumOfConcurrentBombsToDrop(plane.getNumOfConcurrentBombsToDrop() + 1);
                 }
-                rewards.remove(i);}
+                rewards.remove(i);
+            }
         }
+    }
+
+    public LinkedList<Bullet> getBullets() {
+        return bullets;
     }
 
     private void doShooting() {
@@ -261,35 +279,38 @@ public class Model {
             if (vehicles.get(i).isTank()) {
                 if (vehicles.get(i).getBullet() == null) {
                     vehicles.get(i).shoot();
+                    bullets.add(vehicles.get(i).getBullet());
                 } else if (!vehicles.get(i).getBullet().isActive()) {
                     vehicles.get(i).setBullet(null);
                 } else {
-                    vehicles.get(i).getBullet().move();
-                    if ((plane.getPositionX() + 20 >= vehicles.get(i).getBullet().getPositionX())
-                            && plane.getPositionX() - 15 < vehicles.get(i).getBullet().getPositionX()
-                            && plane.getPositionY() - 5 < vehicles.get(i).getBullet().getPositionY()
-                            && plane.getPositionY() + 20 > vehicles.get(i).getBullet().getPositionY()) {
-
-                        plane.setDying(true);
-                    }
                 }
             }
         }
     }
 
-    private void doLightShooting() {
-        for (int i = vehicles.size() - 1; i > -1; i--) {
-            if (vehicles.get(i).isTank()) {
-                if (vehicles.get(i).getBullet() == null) {
-                    return;
+    private void moveBullets(LinkedList<Bullet> bullets) {
+        for (int i = bullets.size() - 1; i > -1; i--) {
+            if (bullets.get(i).isActive()) {
+                bullets.get(i).move();
+                if ((plane.getPositionX() + 30 >= bullets.get(i).getPositionX())
+                        && plane.getPositionX() - 15 < bullets.get(i).getPositionX()
+                        && plane.getPositionY() - 5 < bullets.get(i).getPositionY()
+                        && plane.getPositionY() + 20 > bullets.get(i).getPositionY()) {
+
+                    plane.setDying(true);
                 }
-                if (!vehicles.get(i).getBullet().isActive()) {
-                    vehicles.get(i).setBullet(null);
-                } else {
-                    vehicles.get(i).getBullet().move();
-                }
-            }
+            } else
+                bullets.remove(i);
         }
+    }
+
+
+    public void setLevelCounterTimeShow(int levelCounterTimeShow) {
+        this.levelCounterTimeShow = levelCounterTimeShow;
+    }
+
+    public int getLevelCounterTimeShow() {
+        return levelCounterTimeShow;
     }
 
     private void initLevel() {
@@ -386,6 +407,7 @@ public class Model {
         bombScorePic = new ImageIcon("Pictures\\bombScore.png").getImage();
         lifePic = new ImageIcon("Pictures\\life.png").getImage();
         bulletPic = new ImageIcon("Pictures\\bullet.png").getImage();
+        skullPic = new ImageIcon("Pictures\\skull.png").getImage();
     }
 
     public void planeShoot() {
