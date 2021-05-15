@@ -17,6 +17,11 @@
       "radius": 50
     }
   ],
+  "killers": [
+    {"xPos":  400,
+    "yPos": 300,
+      "killerTimer": 200}
+  ],
   "buildings": [
     {"colour": "red",
     "xPos": 300,
@@ -26,5 +31,5 @@
       "xPos": 100,
       "yPos": 300,
       "bonus": "ATOMIC"}
-  ]
+  ],
 }

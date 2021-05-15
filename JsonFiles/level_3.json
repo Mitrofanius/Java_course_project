@@ -5,6 +5,23 @@
   "numJeeps": 2,
   "numOfCurrentBombsToDrop": 1,
   "reachLineHeight": 130,
+  "killers": [
+    {
+      "xPos": 400,
+      "yPos": 300,
+      "killerTimer": 200
+    },
+    {
+      "xPos": 200,
+      "yPos": 300,
+      "killerTimer": 1000
+    },
+    {
+      "xPos": 450,
+      "yPos": 300,
+      "killerTimer": 100
+    }
+  ],
   "hills": [
     {
       "x": 500,
@@ -18,13 +35,17 @@
     }
   ],
   "buildings": [
-    {"colour": "white",
+    {
+      "colour": "white",
       "xPos": 400,
       "yPos": 300,
-      "bonus": "PLUSBOMB"},
-    {"colour": "red",
+      "bonus": "PLUSBOMB"
+    },
+    {
+      "colour": "red",
       "xPos": 100,
       "yPos": 300,
-      "bonus": "PLUSBOMB"}
+      "bonus": "PLUSBOMB"
+    }
   ]
 }

@@ -164,7 +164,7 @@ public class Controller extends JFrame implements ActionListener {
                 }
                 else if (gameModel.isWin() == true){
                     inOutro = true;
-                    inGame= false;
+                    inGame = false;
                 }
 
             } else {
@@ -177,12 +177,13 @@ public class Controller extends JFrame implements ActionListener {
                     inGame = true;
                     gameModel.loadLastGame();
                 }
-                if (inPause && key == KeyEvent.VK_SPACE) {
+                else if (inPause && key == KeyEvent.VK_SPACE) {
                     inPause = false;
                     inGame = true;
                 }
-                if (inPause && key == KeyEvent.VK_ESCAPE) {
+                else if (inPause && key == KeyEvent.VK_ESCAPE) {
                     inPause = false;
+                    inGame = false;
                     inIntro = true;
                     gameModel.saveCurrentGame();
                 }

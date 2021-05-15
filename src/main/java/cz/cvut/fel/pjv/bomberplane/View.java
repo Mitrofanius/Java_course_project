@@ -64,23 +64,17 @@ public class View extends JPanel {
             drawLevelNumber(g2d);
         }
 
-        for (int i = gameModel.getBuildings().size() - 1; i > -1; i--) {
-            drawObj(g2d, gameModel.getBuildings().get(i));
 
-        }
+        drawKillers(g2d);
 
-        for (int i = gameModel.getRewards().size() - 1; i > -1; i--) {
-            drawObj(g2d, gameModel.getRewards().get(i));
-        }
+        drawBuildings(g2d);
 
-        for (int i = gameModel.getVehicles().size() - 1; i > -1; i--) {
+        drawRewards(g2d);
 
-            drawObj(g2d, gameModel.getVehicles().get(i));
-        }
+        drawVehicles(g2d);
+
         drawBullets(g2d);
-
         drawScore(g2d);
-
         drawDottedLine(g2d);
         drawObj(g2d, gameModel.getPlane());
 
@@ -89,6 +83,30 @@ public class View extends JPanel {
             if (bomb.isExplosion()) {
                 g2d.drawImage(gameModel.getExplosionPic(), bomb.getPositionX(), bomb.getPositionY(), this);
             }
+        }
+    }
+
+    private void drawKillers(Graphics2D g2d) {
+        for (int i = gameModel.getKillers().size() - 1; i > -1; i--) {
+            drawObj(g2d, gameModel.getKillers().get(i));
+        }
+    }
+
+    private void drawBuildings(Graphics2D g2d) {
+        for (int i = gameModel.getBuildings().size() - 1; i > -1; i--) {
+            drawObj(g2d, gameModel.getBuildings().get(i));
+        }
+    }
+
+    private void drawRewards(Graphics2D g2d) {
+        for (int i = gameModel.getRewards().size() - 1; i > -1; i--) {
+            drawObj(g2d, gameModel.getRewards().get(i));
+        }
+    }
+
+    private void drawVehicles(Graphics2D g2d) {
+        for (int i = gameModel.getVehicles().size() - 1; i > -1; i--) {
+            drawObj(g2d, gameModel.getVehicles().get(i));
         }
     }
 

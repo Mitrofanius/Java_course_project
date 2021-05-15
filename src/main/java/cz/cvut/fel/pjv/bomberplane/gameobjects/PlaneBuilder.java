@@ -7,21 +7,10 @@ import java.awt.*;
  * Abstract class which is extended by player's plane class and enemy's vehicles
  * */
 public abstract class PlaneBuilder extends MainGameObj{
-//    private Image picture;
     private int speed;
     private int dir;
 
 
-//    public Image getPicture() {
-//        return picture;
-//    }
-
-//    public void setPicture(Image picture) {
-//        this.picture = picture;
-//    }
-
-//    private int positionX;
-//    private int positionY;
     private int radius;
     private int speedX, speedY;
     private boolean dying = false;
@@ -74,22 +63,6 @@ public abstract class PlaneBuilder extends MainGameObj{
     public int getDir() {
         return dir;
     }
-
-//    public void setPositionX(int positionX) {
-//        this.positionX = positionX;
-//    }
-//
-//    public int getPositionX() {
-//        return positionX;
-//    }
-//
-//    public void setPositionY(int positionY) {
-//        this.positionY = positionY;
-//    }
-//
-//    public int getPositionY() {
-//        return positionY;
-//    }
 
     public void shoot (){}
     public void move (){}

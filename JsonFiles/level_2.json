@@ -5,6 +5,11 @@
   "numJeeps": 2,
   "numOfCurrentBombsToDrop": 1,
   "reachLineHeight": 150,
+  "killers": [
+    {"xPos":  400,
+      "yPos": 300,
+      "killerTimer": 300}
+  ],
   "hills": [
     {
       "x": 500,

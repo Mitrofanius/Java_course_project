@@ -5,10 +5,7 @@ import cz.cvut.fel.pjv.bomberplane.Model;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 /**
  * Plane object to be controlled by a user
@@ -212,7 +209,5 @@ public class Plane extends PlaneBuilder {
     public Image getBombPic() {
         return bombPic;
     }
-
-
 }
 

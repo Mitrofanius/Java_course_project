@@ -3,11 +3,9 @@ package cz.cvut.fel.pjv.bomberplane;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 import cz.cvut.fel.pjv.bomberplane.gameobjects.*;
-import cz.cvut.fel.pjv.bomberplane.gameobjects.Building.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,7 +14,7 @@ import org.json.JSONObject;
  * interaction between objects
  */
 public class Model {
-    // Variables
+    // Variables declaration
     private int atomicCounter = 0;
     private boolean savedGameExists;
     private String savedGameFileName = "JsonFiles\\saved_game.json";
@@ -31,20 +29,15 @@ public class Model {
     private Image jeepPic, truckPicLeft, tankPicLeft, tankPicUp,
             tankPicRight, bombPic, truckPicRight, explosionPic,
             houseRedPic, houseWhitePic, bonusBombPic, atomicBombPic,
-            bombScorePic, lifePic, skullPic, atomicExplosionPic;
+            bombScorePic, lifePic, skullPic, atomicExplosionPic, killerPic;
     private static Image bulletPic;
-
-    public Image getSkullPic() {
-        return skullPic;
-    }
 
     String fromJson;
     private int level = 1;
+    private int groundY = 300;
     private int numTrucks;
     private int numTanks;
     private int numJeeps;
-    private int numBuildings;
-    //    private int numOfConcurrentBombsToDrop = 0;
     private static int reachLineHeight;
 
     private int i;
@@ -53,21 +46,19 @@ public class Model {
     private Jeep jeep;
     private Truck truck;
     private Tank tank;
+    private Killer killer;
     private int speed = 4;
 
     private boolean Win = false;
     private int levelCounterTimeShow = 0;
 
-    private HashSet<Vehicle> enemies;
-//    LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
-//    LinkedList<Bullet> bullets = new LinkedList<Bullet>();
-//    LinkedList<FloatingReward> rewards = new LinkedList<FloatingReward>();
-//    private LinkedList<Building> buildings = new LinkedList<Building>();
-
     private LinkedList<Vehicle> vehicles;
     private LinkedList<Bullet> bullets;
     private LinkedList<FloatingReward> rewards;
     private LinkedList<Building> buildings;
+    private LinkedList<Killer> killers;
+
+//    End of variables declaration
 
     public Model() {
         initBoard();
@@ -90,12 +81,25 @@ public class Model {
             String lvlFile = "level_" + num + ".json";
             fromJson = FileHandler.readFile(("JsonFiles\\" + lvlFile));
         }
-        System.out.println(fromJson);
         JSONObject temp;
         JSONObject o = new JSONObject(fromJson);
         level = o.getInt("level");
-        System.out.println(o.toString());
-        JSONArray static_objs = o.getJSONArray("buildings");
+
+        createBuildings(o);
+        createKillers(o);
+
+        numTanks = o.getInt("numTanks");
+        numTrucks = o.getInt("numTrucks");
+        numJeeps = o.getInt("numJeeps");
+        reachLineHeight = o.getInt("reachLineHeight");
+        if (plane.getNumOfConcurrentBombsToDrop() == 0) {
+            plane.setNumOfConcurrentBombsToDrop(o.getInt("numOfCurrentBombsToDrop"));
+        }
+    }
+
+    public void createBuildings(JSONObject jo){
+        JSONArray static_objs = jo.getJSONArray("buildings");
+        JSONObject temp;
         for (i = 0; i < static_objs.length(); i++) {
             temp = static_objs.getJSONObject(i);
             if (temp.getString("colour").equals("white")) {
@@ -107,18 +111,16 @@ public class Model {
                         new Building(houseRedPic, temp.getInt("xPos"), temp.getInt("yPos"), temp.getString("bonus")));
             }
         }
-
-        numTanks = o.getInt("numTanks");
-        numTrucks = o.getInt("numTrucks");
-        numJeeps = o.getInt("numJeeps");
-        reachLineHeight = o.getInt("reachLineHeight");
-        if (plane.getNumOfConcurrentBombsToDrop() == 0) {
-            plane.setNumOfConcurrentBombsToDrop(o.getInt("numOfCurrentBombsToDrop"));
-        }
     }
 
-    public HashSet<Vehicle> getEnemies() {
-        return enemies;
+    public void createKillers(JSONObject jo){
+        JSONObject temp;
+        JSONArray killersJO = jo.getJSONArray("killers");
+        for (i = 0; i < killersJO.length(); i++){
+            temp = killersJO.getJSONObject(i);
+            killer = new Killer(killerPic, temp.getInt("xPos"), temp.getInt("yPos"), temp.getInt("killerTimer"));
+            killers.add(killer);
+        }
     }
 
     public Plane getPlane() {
@@ -135,6 +137,14 @@ public class Model {
 
     public LinkedList<Building> getBuildings() {
         return buildings;
+    }
+
+    public Image getKillerPic() {
+        return killerPic;
+    }
+
+    public LinkedList<Killer> getKillers() {
+        return killers;
     }
 
     public void death() {
@@ -162,9 +172,11 @@ public class Model {
         vehicles = new LinkedList<Vehicle>();
         buildings = new LinkedList<Building>();
         rewards = new LinkedList<FloatingReward>();
+        killers = new LinkedList<Killer>();
         plane.setNumOfConcurrentBombsToDrop(0);
         plane.setNumOfAtomicBombs(0);
         plane.setNumberOfKills(0);
+        plane.setDying(false);
         loadLevelInfo(1);
         initLevel();
     }
@@ -194,12 +206,13 @@ public class Model {
         checkRewards();
         plane.move();
         if (plane.getPositionY() >= reachLineHeight - 20) {
-            doShooting();
+            doTankShooting();
             moveBullets(bullets);
         } else {
             moveBullets(bullets);
         }
 
+        moveKillers();
         moveVehicles();
 
         if (plane.checkBombs() > 0) {
@@ -211,6 +224,7 @@ public class Model {
                     }
                     checkVehicles(bomb);
                     checkBuildings(bomb);
+                    checkKillers(bomb);
                 }
             }
         }
@@ -218,6 +232,15 @@ public class Model {
 
     }
 
+    private void checkKillers(Missile bomb) {
+        for (int i =killers.size() - 1; i > -1; i--) {
+            if ((bomb.getPositionX() + 10) > killers.get(i).getPositionX()
+                    && bomb.getPositionX() - 30 < killers.get(i).getPositionX()
+                    && killers.get(i).getPositionY() >= groundY - 20) {
+                killers.remove(i);
+            }
+        }
+    }
 
     private void checkBuildings(Missile bomb) {
         for (int i = buildings.size() - 1; i > -1; i--) {
@@ -243,6 +266,24 @@ public class Model {
                     && bomb.getPositionX() - 30 < vehicles.get(i).getPositionX()) {
                 vehicles.remove(i);
                 plane.setNumberOfKills(plane.getNumberOfKills() + 1);
+            }
+        }
+    }
+
+    private void moveKillers() {
+        for (int i = killers.size() - 1; i > -1; i--) {
+            if (killers.get(i).isActive()) {
+                killers.get(i).move();
+                if ((plane.getPositionX() + 30 >= killers.get(i).getPositionX())
+                        && plane.getPositionX() - 15 < killers.get(i).getPositionX()
+                        && plane.getPositionY() - 6 < killers.get(i).getPositionY()
+                        && plane.getPositionY() + 20 > killers.get(i).getPositionY()) {
+
+                    plane.setDying(true);
+                    killers.remove(i);
+                }
+            } else{
+
             }
         }
     }
@@ -282,7 +323,6 @@ public class Model {
         JSONObject temp = new JSONObject();
         JSONObject jo = new JSONObject();
         JSONObject joHelp = new JSONObject();
-        JSONArray ja = new JSONArray();
         jo.put("level", level);
         for (int i = 0; i < vehicles.size(); i++) {
             if (vehicles.get(i).isTank()) {
@@ -292,6 +332,18 @@ public class Model {
             else
                 jeeps += 1;
         }
+
+        JSONArray ja = new JSONArray();
+
+        for (int i = 0; i < killers.size(); i++){
+            joHelp = new JSONObject();
+            joHelp.put("xPos", killers.get(i).getPositionX());
+            joHelp.put("yPos", killers.get(i).getPositionY());
+            joHelp.put("killerTimer", killers.get(i).getShootTimer());
+            ja.put(joHelp);
+        }
+        jo.put("killers", ja);
+        ja = new JSONArray();
         jo.put("numTanks", tanks);
         jo.put("numTrucks", trucks);
         jo.put("numJeeps", jeeps);
@@ -323,10 +375,6 @@ public class Model {
         return Win;
     }
 
-    public void setWin(boolean win) {
-        Win = win;
-    }
-
     private void startNextLevel() {
         String s;
 
@@ -346,20 +394,13 @@ public class Model {
         return explosionPic;
     }
 
+    public Image getSkullPic() {
+        return skullPic;
+    }
+
+
     public static int getReachLineHeight() {
         return reachLineHeight;
-    }
-
-    public Image getHouseRedPic() {
-        return houseRedPic;
-    }
-
-    public Image getHouseWhitePic() {
-        return houseWhitePic;
-    }
-
-    public Image getBonusBombPic() {
-        return bonusBombPic;
     }
 
     public Image getAtomicBombPic() {
@@ -401,7 +442,7 @@ public class Model {
         return bullets;
     }
 
-    private void doShooting() {
+    private void doTankShooting() {
         for (int i = vehicles.size() - 1; i > -1; i--) {
             if (vehicles.get(i).isTank()) {
                 if (vehicles.get(i).getBullet() == null) {
@@ -442,6 +483,14 @@ public class Model {
 
     private void initLevel() {
         levelCounterTimeShow = 0;
+        plane.setPositionX(0);
+        plane.setPositionY(0);
+        plane.setSpeedY(0);
+        plane.setSpeedX(plane.getSpeed());
+        plane.setPicture(plane.getPlanerigth());
+        if (plane.getNumberOfLives() == 0){
+            plane.setNumberOfLives(2);
+        }
         int i = 0;
         int coordX = 0;
         int speedDir = 1;
@@ -466,6 +515,7 @@ public class Model {
             coordX += 50;
             speedDir *= -1;
         }
+
     }
 
     public int getLevel() {
@@ -536,6 +586,7 @@ public class Model {
         bulletPic = new ImageIcon("Pictures\\bullet.png").getImage();
         skullPic = new ImageIcon("Pictures\\skull.png").getImage();
         atomicExplosionPic = new ImageIcon("Pictures\\AtomicExplosion.png").getImage();
+        killerPic = new ImageIcon("Pictures\\killer.png").getImage();
     }
 
     public Image getAtomicExplosionPic() {

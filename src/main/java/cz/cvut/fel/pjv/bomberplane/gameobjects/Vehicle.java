@@ -1,7 +1,6 @@
 package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 
-import cz.cvut.fel.pjv.bomberplane.Main;
 import cz.cvut.fel.pjv.bomberplane.Model;
 
 import java.awt.*;
@@ -10,7 +9,6 @@ import java.awt.*;
  * Abstract class which is extended by player's plane class and enemy's vehicles
  */
 public abstract class Vehicle extends MainGameObj{
-//    private Image picture;
 
     public void setBullet(Bullet bullet) {
         this.bullet = bullet;
