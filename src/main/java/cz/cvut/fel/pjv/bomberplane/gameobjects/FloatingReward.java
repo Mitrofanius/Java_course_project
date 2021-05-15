@@ -2,7 +2,6 @@ package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 
 import java.awt.*;
-import cz.cvut.fel.pjv.bomberplane.gameobjects.Building.Bonus;
 /**
  * Several rewards can be gained by the player
  * on every level, they will improve his firepower
@@ -14,14 +13,14 @@ public class FloatingReward {
     private int speedY = 1;
     private boolean caught;
     private Image picture;
-    private Bonus benefit;
+    private String benefit;
     int dir = 1;
 
-    public Bonus getBenefit() {
+    public String getBenefit() {
         return benefit;
     }
 
-    public void setBenefit(Bonus benefit) {
+    public void setBenefit(String benefit) {
         this.benefit = benefit;
     }
 
@@ -46,7 +45,7 @@ public class FloatingReward {
         return picture;
     }
 
-    public FloatingReward(Image img, int x, int y, Bonus bn){
+    public FloatingReward(Image img, int x, int y, String bn){
         positionX = x;
         positionY = y;
         picture = img;

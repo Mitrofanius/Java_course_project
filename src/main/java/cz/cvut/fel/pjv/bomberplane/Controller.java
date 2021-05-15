@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.security.KeyStore;
 
 public class Controller extends JFrame implements ActionListener {
 
@@ -161,15 +162,16 @@ public class Controller extends JFrame implements ActionListener {
                         inGame = true;
                     }
                 }
+                else if (gameModel.isWin() == true){
+                    inOutro = true;
+                    inGame= false;
+                }
 
             } else {
                 if (inIntro && key == KeyEvent.VK_SPACE) {
                     inIntro = false;
                     inGame = true;
-//                    FileHandler.writeToFile("saved_game.json", "");
-                    gameModel.getPlane().setNumberOfLives(3);
-                    gameModel.getPlane().setNumberOfKills(0);
-                    gameModel.death();
+                    gameModel.setInitParams();
                 } else if (inIntro && key == KeyEvent.VK_C) {
                     inIntro = false;
                     inGame = true;
@@ -185,10 +187,6 @@ public class Controller extends JFrame implements ActionListener {
                     gameModel.saveCurrentGame();
                 }
             }
-//            if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
-//                inGame = false;
-//                in
-//            }
         }
 
         @Override

@@ -125,6 +125,12 @@ public class Plane extends PlaneBuilder {
         }
         if ((this.getPositionY() < 0)) {
             this.setSpeedY(this.getSpeed());
+            if (getSpeedX() == 0)
+                setPicture(planedown);
+            else if (getSpeedX() > 0)
+                setPicture(planedownright);
+            else
+                setPicture(planedownleft);
         }
         if (this.getPositionY() > 300) {
             setDying(true);

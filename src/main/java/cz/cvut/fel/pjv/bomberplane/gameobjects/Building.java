@@ -13,13 +13,7 @@ public class Building {
     private boolean destroyed;
     private Image picture;
 
-    public enum Bonus {
-        PLUSBOMB,
-        ATOMIC,
-        FIREPOWER
-    }
-
-    Bonus bon;
+    String bon;
 
     public Image getPicture() {
         return picture;
@@ -33,7 +27,7 @@ public class Building {
         return positionX;
     }
 
-    public Bonus getBon() {
+    public String getBon() {
         return bon;
     }
 
@@ -63,12 +57,12 @@ public class Building {
         destroyed = false;
         picture = img;
         if (benefit.equals("PLUSBOMB")) {
-            bon = Bonus.PLUSBOMB;
+            bon = BonusType.PLUSBOMB;
         } else if (benefit.equals("ATOMIC")) {
-            bon = Bonus.ATOMIC;
+            bon = BonusType.ATOMIC;
         }
         else{
-            bon = Bonus.FIREPOWER;
+            bon = BonusType.FIREPOWER;
         }
 
     }

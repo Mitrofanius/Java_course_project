@@ -12,7 +12,6 @@ public class Truck extends Vehicle{
     int[] map = new int[650];
 
     public Truck(Image picl, Image picr, int x, int y, int speed) {
-        setTruck(true);
         setPicLeft(picl);
         setPicRight(picr);
         if (speed > 0) {
@@ -44,6 +43,10 @@ public class Truck extends Vehicle{
 
     }
 
+    @Override
+    public boolean isTruck(){
+        return true;
+    }
     @Override
     public void move() {
         super.move();

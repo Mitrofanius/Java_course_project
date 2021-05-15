@@ -31,10 +31,6 @@ public class FileHandler {
 
     public static void writeToFile(String fileName, String content) {
         try {
-            File file = new File(fileName);
-//            if (!file.exists()){
-//                file.createNewFile();
-//            }
             FileWriter myWriter = new FileWriter(fileName);
             myWriter.write(content);
 

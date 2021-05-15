@@ -49,7 +49,6 @@ public class Model {
 
     private int i;
 
-    private Bonus localBon = Bonus.PLUSBOMB;
     private Plane plane;
     private Jeep jeep;
     private Truck truck;
@@ -60,10 +59,15 @@ public class Model {
     private int levelCounterTimeShow = 0;
 
     private HashSet<Vehicle> enemies;
-    LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
-    LinkedList<Bullet> bullets = new LinkedList<Bullet>();
-    LinkedList<FloatingReward> rewards = new LinkedList<FloatingReward>();
-    private LinkedList<Building> buildings = new LinkedList<Building>();
+//    LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
+//    LinkedList<Bullet> bullets = new LinkedList<Bullet>();
+//    LinkedList<FloatingReward> rewards = new LinkedList<FloatingReward>();
+//    private LinkedList<Building> buildings = new LinkedList<Building>();
+
+    private LinkedList<Vehicle> vehicles;
+    private LinkedList<Bullet> bullets;
+    private LinkedList<FloatingReward> rewards;
+    private LinkedList<Building> buildings;
 
     public Model() {
         initBoard();
@@ -71,26 +75,25 @@ public class Model {
 
     private void initBoard() {
         savedGameExists = false;
-        if (!FileHandler.readFile(savedGameFileName).equals("NOINFO")){
+        if (!FileHandler.readFile(savedGameFileName).equals("NOINFO")) {
             savedGameExists = true;
         }
         plane = new Plane(speed, 1, 0);
         loadPics();
-        loadLevelInfo(1);
-        initLevel();
+        setInitParams();
     }
 
     public void loadLevelInfo(int num) {
-        level = num;
-        if (num == 0)
+        if (num == 0) {
             fromJson = FileHandler.readFile(savedGameFileName);
-        else{
+        } else {
             String lvlFile = "level_" + num + ".json";
             fromJson = FileHandler.readFile(("JsonFiles\\" + lvlFile));
         }
         System.out.println(fromJson);
         JSONObject temp;
         JSONObject o = new JSONObject(fromJson);
+        level = o.getInt("level");
         System.out.println(o.toString());
         JSONArray static_objs = o.getJSONArray("buildings");
         for (i = 0; i < static_objs.length(); i++) {
@@ -140,6 +143,7 @@ public class Model {
             plane.setSpeedY(0);
             plane.setDir(1);
             plane.setNumOfAtomicBombs(0);
+            plane.setNumOfConcurrentBombsToDrop(1);
             plane.setPositionX(0);
             plane.setPositionY(0);
             plane.setBombs(new LinkedList<>());
@@ -151,6 +155,18 @@ public class Model {
             Controller.setInGame(false);
             Controller.setInIntro(true);
         }
+    }
+
+    public void setInitParams() {
+        bullets = new LinkedList<Bullet>();
+        vehicles = new LinkedList<Vehicle>();
+        buildings = new LinkedList<Building>();
+        rewards = new LinkedList<FloatingReward>();
+        plane.setNumOfConcurrentBombsToDrop(0);
+        plane.setNumOfAtomicBombs(0);
+        plane.setNumberOfKills(0);
+        loadLevelInfo(1);
+        initLevel();
     }
 
     public int getAtomicCounter() {
@@ -207,14 +223,14 @@ public class Model {
         for (int i = buildings.size() - 1; i > -1; i--) {
             if ((bomb.getPositionX() + 10) > buildings.get(i).getPositionX()
                     && bomb.getPositionX() - 40 < buildings.get(i).getPositionX()) {
-                if (buildings.get(i).getPicture().equals(bonusBombPic)) {
+                if (buildings.get(i).getBon().equals(BonusType.PLUSBOMB)) {
                     rewards.add(new FloatingReward(bonusBombPic,
                             buildings.get(i).getPositionX(),
-                            buildings.get(i).getPositionY(), Bonus.PLUSBOMB));
+                            buildings.get(i).getPositionY(), BonusType.PLUSBOMB));
                 } else {
                     rewards.add(new FloatingReward(atomicBombPic,
                             buildings.get(i).getPositionX(),
-                            buildings.get(i).getPositionY(), Bonus.ATOMIC));
+                            buildings.get(i).getPositionY(), BonusType.ATOMIC));
                 }
                 buildings.remove(i);
             }
@@ -241,7 +257,12 @@ public class Model {
     }
 
     public void loadLastGame() {
+        buildings = new LinkedList<Building>();
+        vehicles = new LinkedList<Vehicle>();
+        buildings = new LinkedList<Building>();
+        bullets = new LinkedList<Bullet>();
         loadLevelInfo(0);
+        fromJson = FileHandler.readFile(savedGameFileName);
         JSONObject jo = new JSONObject(fromJson);
         plane.setNumOfAtomicBombs(jo.getInt("numOfAtomicBombs"));
         plane.setNumberOfKills(jo.getInt("numberOfKills"));
@@ -249,6 +270,7 @@ public class Model {
         plane.setNumOfConcurrentBombsToDrop(jo.getInt("numOfConcurrentBombsToDrop"));
         plane.setPositionX(jo.getInt("planeX"));
         plane.setPositionY(jo.getInt("planeY"));
+        initLevel();
     }
 
     public void saveCurrentGame() {
@@ -263,10 +285,9 @@ public class Model {
         JSONArray ja = new JSONArray();
         jo.put("level", level);
         for (int i = 0; i < vehicles.size(); i++) {
-            if (vehicles.get(i).isTank())
+            if (vehicles.get(i).isTank()) {
                 tanks += 1;
-
-            else if (vehicles.get(i).isTruck())
+            } else if (vehicles.get(i).isTruck())
                 trucks += 1;
             else
                 jeeps += 1;
@@ -298,6 +319,14 @@ public class Model {
         FileHandler.writeToFile(savedGameFileName, jo.toString());
     }
 
+    public boolean isWin() {
+        return Win;
+    }
+
+    public void setWin(boolean win) {
+        Win = win;
+    }
+
     private void startNextLevel() {
         String s;
 
@@ -305,7 +334,7 @@ public class Model {
         File check = new File(s);
         if (!check.isFile()) {
             Win = true;
-            System.out.println(s);
+            FileHandler.writeToFile(savedGameFileName, "NOINFO");
             return;
         }
         loadLevelInfo(level + 1);
@@ -357,7 +386,8 @@ public class Model {
                     && (rewards.get(i).getPositionY() <= plane.getPositionY() + 20)
                     && (rewards.get(i).getPositionY() >= plane.getPositionY() - 20))) {
                 rewards.get(i).setCaught(true);
-                if (rewards.get(i).getBenefit().equals(Bonus.PLUSBOMB)) {
+
+                if (rewards.get(i).getBenefit().equals(BonusType.PLUSBOMB)) {
                     plane.setNumOfConcurrentBombsToDrop(plane.getNumOfConcurrentBombsToDrop() + 1);
                 } else {
                     plane.setNumOfAtomicBombs(plane.getNumOfAtomicBombs() + 1);

@@ -83,14 +83,9 @@ public abstract class Vehicle extends MainGameObj{
     private int radius;
     private int speedX, speedY;
     private boolean dying = false;
-    private boolean isTruck;
 
     public boolean isTruck() {
-        return isTruck;
-    }
-
-    public void setTruck(boolean truck) {
-        isTruck = truck;
+        return false;
     }
 
     public boolean isDying() {
@@ -140,27 +135,10 @@ public abstract class Vehicle extends MainGameObj{
     public int getDir() {
         return dir;
     }
-//
-//    public void setPositionX(int positionX) {
-//        this.positionX = positionX;
-//    }
-//
-//    public int getPositionX() {
-//        return positionX;
-//    }
-//
-//    public void setPositionY(int positionY) {
-//        this.positionY = positionY;
-//    }
-//
-//    public int getPositionY() {
-//        return positionY;
-//    }
 
     public void shoot() {
     }
 
-    //    public void move (){}
     public void move() {
         if (this.getPositionX() > 490 && this.getPositionX() < 560) {
             if (this.getPositionX() > 490 && this.getPositionX() < 525) {
