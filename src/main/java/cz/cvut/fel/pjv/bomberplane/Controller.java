@@ -151,8 +151,8 @@ public class Controller extends JFrame implements ActionListener {
 
                 if (key == KeyEvent.VK_B) {
                     gameModel.planeShoot();
-                } else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
-                    inGame = false;
+                } else if (key == KeyEvent.VK_A) {
+                        gameModel.planeShootAtomic();
                 } else if (key == KeyEvent.VK_SPACE) {
                     if (timer.isRunning()) {
                         inGame = false;
@@ -166,19 +166,23 @@ public class Controller extends JFrame implements ActionListener {
                 if (inIntro && key == KeyEvent.VK_SPACE) {
                     inIntro = false;
                     inGame = true;
+//                    FileHandler.writeToFile("saved_game.json", "");
                     gameModel.getPlane().setNumberOfLives(3);
-                    gameModel.getPlane().setDying(true);
-                }
-                else if (inIntro && key == KeyEvent.VK_C){
-//                    TODO
+                    gameModel.getPlane().setNumberOfKills(0);
+                    gameModel.death();
+                } else if (inIntro && key == KeyEvent.VK_C) {
+                    inIntro = false;
+                    inGame = true;
+                    gameModel.loadLastGame();
                 }
                 if (inPause && key == KeyEvent.VK_SPACE) {
                     inPause = false;
                     inGame = true;
                 }
-                if (inPause && key == KeyEvent.VK_ESCAPE){
+                if (inPause && key == KeyEvent.VK_ESCAPE) {
                     inPause = false;
                     inIntro = true;
+                    gameModel.saveCurrentGame();
                 }
             }
 //            if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {

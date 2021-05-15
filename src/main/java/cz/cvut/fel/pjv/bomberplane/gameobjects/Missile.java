@@ -12,8 +12,7 @@ import java.awt.*;
  */
 public class Missile extends MainGameObj{
     private int firepower;
-//    private int positionX;
-//    private int positionY;
+
     private Image picture;
     private boolean explosion = false;
 
@@ -24,13 +23,7 @@ public class Missile extends MainGameObj{
         return firepower;
     }
 
-//    public int getPositionX() {
-//        return positionX;
-//    }
-//
-//    public int getPositionY() {
-//        return positionY;
-//    }
+
 
     public Image getPicture() {
         return picture;
@@ -38,6 +31,10 @@ public class Missile extends MainGameObj{
 
     public int getSpeedX() {
         return speedX;
+    }
+
+    public void setAtomic(boolean atomic) {
+        Atomic = atomic;
     }
 
     public int getSpeedY() {
@@ -63,7 +60,6 @@ public class Missile extends MainGameObj{
         active = true;
         setPositionX(x + 15);
         setPositionY(y + 15);
-//        speedX = speed - speed / 3;
         speedX = speed;
         picture = pic;
     }

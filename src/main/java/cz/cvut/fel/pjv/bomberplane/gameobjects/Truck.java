@@ -12,6 +12,7 @@ public class Truck extends Vehicle{
     int[] map = new int[650];
 
     public Truck(Image picl, Image picr, int x, int y, int speed) {
+        setTruck(true);
         setPicLeft(picl);
         setPicRight(picr);
         if (speed > 0) {
@@ -46,45 +47,6 @@ public class Truck extends Vehicle{
     @Override
     public void move() {
         super.move();
-//        if (this.getPositionX() > 490 && this.getPositionX() < 560) {
-//            if (this.getPositionX() > 490 && this.getPositionX() < 525) {
-//                if (this.getSpeedX() > 0) {
-//                    setSpeedY(-2);
-//                    setSpeedX(3);
-//                }
-//                else{
-//                    setSpeedY(2);
-//                    setSpeedX(-3);
-//                }
-//            }
-//            if (this.getPositionX() > 525 && this.getPositionX() < 570) {
-//                if (this.getSpeedX() > 0) {
-//                    setSpeedY(2);
-//                    setSpeedX(3);
-//
-//                }
-//                else{
-//                    setSpeedY(-2);
-//                    setSpeedX(-3);
-//
-//                };
-//            }
-////            if (map[this.getPositionX()] == 0) {
-////                setSpeedY(0);
-////            }
-////            this.setSpeedX((getSpeedX() / 3) * 5);
-//        }
-//
-//        this.setPositionX(this.getPositionX() + this.getSpeedX());
-//        this.setPositionY(this.getPositionY() + this.getSpeedY());
-//        if ((this.getPositionX() + 3 * transferOffset) >= Main.panelWidth) {
-//            this.setSpeedX(-this.getSpeedX());
-//        }
-//        if ((this.getPositionX() + transferOffset) <= 0) {
-//            this.setSpeedX(-this.getSpeedX());
-//        }
-//        this.setSpeedY(0);
-//        this.setSpeedX((getSpeedX() / 3) * defaultSpeed);
 
     }
 }

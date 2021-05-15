@@ -37,6 +37,8 @@ public class Plane extends PlaneBuilder {
     }
 
     public void setDying(boolean dying) {
+        if (dying == true)
+            numOfConcurrentBombsToDrop = 1;
         this.dying = dying;
     }
 
@@ -53,6 +55,11 @@ public class Plane extends PlaneBuilder {
 
     private int numberOfLives = 2;
     private int numOfAtomicBombs = 0;
+
+    public void setNumOfAtomicBombs(int numOfAtomicBombs) {
+        this.numOfAtomicBombs = numOfAtomicBombs;
+    }
+
     private int transferOffset = 50;
     private Image planeleft, planerigth,
             planeleftup, planerightup,
@@ -83,14 +90,23 @@ public class Plane extends PlaneBuilder {
             bombs.add(new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic()));
         }
     }
-    public int checkBombs(){
-//        for (Missile bomb: bombs){
-//            if (!bomb.isActive()){
-//                bombs.remove(bomb);
-//            }
-//        }
-        for (int i = bombs.size() - 1; i > -1; i--){
-            if (!bombs.get(i).isActive()){
+
+    public void shootAtomic() {
+        if (numOfAtomicBombs == 0) {
+            return;
+        }
+        if (numOfConcurrentBombsToDrop > bombs.size()) {
+            Missile bmb = new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic());
+            bmb.setAtomic(true);
+            bombs.add(bmb);
+            numOfAtomicBombs -= 1;
+        }
+    }
+
+    public int checkBombs() {
+
+        for (int i = bombs.size() - 1; i > -1; i--) {
+            if (!bombs.get(i).isActive()) {
                 bombs.remove(i);
             }
         }
@@ -110,12 +126,13 @@ public class Plane extends PlaneBuilder {
         if ((this.getPositionY() < 0)) {
             this.setSpeedY(this.getSpeed());
         }
-        if (this.getPositionY() > 300){
+        if (this.getPositionY() > 300) {
             setDying(true);
         }
     }
 
-    public void animate(){}
+    public void animate() {
+    }
 
     private void loadImages() {
         planeleft = new ImageIcon("Pictures\\left.png").getImage();

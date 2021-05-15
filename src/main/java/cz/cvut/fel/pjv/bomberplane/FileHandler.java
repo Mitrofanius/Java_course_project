@@ -1,12 +1,10 @@
 package cz.cvut.fel.pjv.bomberplane;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class FileReader {
-    public static String read_file(String arg) {
+public class FileHandler {
+    public static String readFile(String arg) {
         String everything = null;
         FileInputStream inputStream = null;
         try {
@@ -15,7 +13,6 @@ public class FileReader {
             e.printStackTrace();
         }
         try {
-//            everything = IOUtils.toString(inputStream);
             try {
                 everything = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
             } catch (IOException e) {
@@ -30,5 +27,22 @@ public class FileReader {
             }
         }
         return everything;
+    }
+
+    public static void writeToFile(String fileName, String content) {
+        try {
+            File file = new File(fileName);
+//            if (!file.exists()){
+//                file.createNewFile();
+//            }
+            FileWriter myWriter = new FileWriter(fileName);
+            myWriter.write(content);
+
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 }

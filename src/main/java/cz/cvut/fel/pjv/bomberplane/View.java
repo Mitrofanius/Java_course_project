@@ -52,6 +52,13 @@ public class View extends JPanel {
             g2d.drawImage(gameModel.getExplosionPic(), gameModel.getPlane().getPositionX(), gameModel.getPlane().getPositionY(), this);
         }
 
+        if (gameModel.getAtomicCounter() < 50 && gameModel.getAtomicCounter() != 0) {
+            gameModel.setAtomicCounter(gameModel.getAtomicCounter() + 1);
+            drawAtomicExplosion(g2d, 100, -100);
+            drawObj(g2d, gameModel.getPlane());
+            return;
+        }
+
         drawHills(g2d);
         if (gameModel.getLevelCounterTimeShow() < 50) {
             drawLevelNumber(g2d);
@@ -112,7 +119,12 @@ public class View extends JPanel {
         g2d.fillRect(menuCoordX, gameModel.height / 2 + 20, gameModel.width - 100, 50);
         g2d.setColor(Color.white);
         g2d.drawRect(menuCoordX, gameModel.height / 2 + 20, gameModel.width - 100, 50);
-        s = "Press \"C\" to continue your previous Game";
+        if (gameModel.isSavedGameExists()) {
+            s = "Press \"C\" to continue your previous Game";
+        }
+        else{
+            s = "Currently you have no saved game to load";
+        }
         g2d.drawString(s, gameModel.width / 2 - 245, (gameModel.height) / 2 + 50);
     }
 
@@ -179,6 +191,10 @@ public class View extends JPanel {
         s = "x" + gameModel.getPlane().getNumberOfKills();
         g2d.drawString(s, 122, 16);
 
+    }
+
+    private void drawAtomicExplosion(Graphics2D g2d, int x, int y) {
+        g2d.drawImage(gameModel.getAtomicExplosionPic(), x, y, this);
     }
 
     private void drawObj(Graphics2D g2d, MainGameObj obj) {

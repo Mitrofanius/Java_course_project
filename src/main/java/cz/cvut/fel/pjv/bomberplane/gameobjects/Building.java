@@ -3,11 +3,6 @@ package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 import java.awt.*;
 
-//enum Bonus {
-//    PLUSBOMBS,
-//    ATOMIC,
-//    FIREPOWER
-//}
 /**
  * Object of that class should be destroyed
  * by the player for a reward on every level
@@ -17,14 +12,9 @@ public class Building {
     private int PositionY;
     private boolean destroyed;
     private Image picture;
-//    enum Bonus {
-//        PLUSBOMBS,
-//        ATOMIC,
-//        FIREPOWER
-//    }
 
     public enum Bonus {
-        PLUSBOMBS,
+        PLUSBOMB,
         ATOMIC,
         FIREPOWER
     }
@@ -73,7 +63,7 @@ public class Building {
         destroyed = false;
         picture = img;
         if (benefit.equals("PLUSBOMB")) {
-            bon = Bonus.PLUSBOMBS;
+            bon = Bonus.PLUSBOMB;
         } else if (benefit.equals("ATOMIC")) {
             bon = Bonus.ATOMIC;
         }

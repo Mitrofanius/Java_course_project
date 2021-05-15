@@ -25,11 +25,6 @@ public class FloatingReward {
         this.benefit = benefit;
     }
 
-//    enum Bonus {
-//        PLUSBOMBS,
-//        ATOMIC,
-//        FIREPOWER
-//    }
 
     public int getPositionX() {
         return positionX;
@@ -57,10 +52,10 @@ public class FloatingReward {
         picture = img;
         caught = false;
         benefit = bn;
+        System.out.println(benefit + " benefit");
     }
 
     public void move(){
-//        positionX += speedX * dir;
         positionY -= speedY;
         dir *= -1;
 

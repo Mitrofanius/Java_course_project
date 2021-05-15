@@ -1,0 +1,1 @@
+{"numOfConcurrentBombsToDrop":5,"planeX":160,"planeY":0,"reachLineHeight":180,"level":1,"numTrucks":2,"buildings":[{"colour":"red","yPos":300,"bonus":"PLUSBOMB","xPos":300},{"colour":"white","yPos":300,"bonus":"ATOMIC","xPos":100}],"numberOfKills":0,"numOfAtomicBombs":0,"numTanks":1,"numJeeps":2}

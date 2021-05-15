@@ -83,7 +83,15 @@ public abstract class Vehicle extends MainGameObj{
     private int radius;
     private int speedX, speedY;
     private boolean dying = false;
+    private boolean isTruck;
 
+    public boolean isTruck() {
+        return isTruck;
+    }
+
+    public void setTruck(boolean truck) {
+        isTruck = truck;
+    }
 
     public boolean isDying() {
         return dying;
