@@ -42,14 +42,14 @@ public class View extends JPanel {
         g2d.setColor(new Color(19, 177, 19));
         g2d.fillRect(0, 320, gameModel.width, gameModel.height);
 
-        if (Controller.isInGame()) {
+        if (gameModel.getController().isInGame()) {
             drawGame(g2d);
-        } else if (Controller.isInIntro()) {
+        } else if (gameModel.getController().isInIntro()) {
             showIntroScreen(g2d);
-        } else if (Controller.isInPause()) {
+        } else if (gameModel.getController().isInPause()) {
             drawGame(g2d);
             showPauseScreen(g2d);
-        } else if (Controller.isInOutro()) {
+        } else if (gameModel.getController().isInOutro()) {
             drawGame(g2d);
             showOutroScreen(g2d);
         }
@@ -184,7 +184,7 @@ public class View extends JPanel {
     }
 
     private void showOutroScreen(Graphics2D g2d) {
-        Controller.setInGame(false);
+        gameModel.getController().setInGame(false);
         g2d.setColor(new Color(16, 92, 130));
         g2d.fillRect(50, gameModel.height / 2 - 30, gameModel.width - 100, 50);
         g2d.setColor(Color.white);

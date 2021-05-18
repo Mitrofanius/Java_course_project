@@ -137,9 +137,6 @@ public class Plane extends PlaneBuilder {
         }
     }
 
-    public void animate() {
-    }
-
     private void loadImages() {
         planeleft = new ImageIcon("Pictures\\left.png").getImage();
         planerigth = new ImageIcon("Pictures\\right.png").getImage();
@@ -163,10 +160,6 @@ public class Plane extends PlaneBuilder {
 
     public int getNumOfAtomicBombs() {
         return numOfAtomicBombs;
-    }
-
-    public int getTransferOffset() {
-        return transferOffset;
     }
 
     public Image getPlaneleft() {

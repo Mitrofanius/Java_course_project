@@ -34,6 +34,8 @@ import org.json.JSONObject;
  */
 public class Model {
     // Variables declaration
+    Controller controller;
+    MusicThread musicplay;
     private int atomicCounter = 0;
     private boolean savedGameExists;
     private String savedGameFileName = "JsonFiles\\saved_game.json";
@@ -91,7 +93,13 @@ public class Model {
 
 //    End of variables declaration
 
-    public Model() {
+    public Controller getController() {
+        return controller;
+    }
+
+    public Model(Controller controller) {
+        musicplay = new MusicThread(controller);
+        this.controller = controller;
         initBoard();
     }
 
@@ -205,8 +213,8 @@ public class Model {
             plane.setDying(false);
         } else {
             FileHandler.writeToFile(savedGameFileName, "NOINFO");
-            Controller.setInGame(false);
-            Controller.setInIntro(true);
+            controller.setInGame(false);
+            controller.setInIntro(true);
         }
     }
 
@@ -317,7 +325,9 @@ public class Model {
         for (int i = vehicles.size() - 1; i > -1; i--) {
             if ((bomb.getPositionX() + 10) > vehicles.get(i).getPositionX()
                     && bomb.getPositionX() - 30 < vehicles.get(i).getPositionX()) {
+                controller.setIsMusic(true);
                 vehicles.remove(i);
+                controller.setIsMusic(true);
                 LOGGER.log(Level.INFO, "Enemy's vehicle destroyed");
                 plane.setNumberOfKills(plane.getNumberOfKills() + 1);
             }
@@ -663,24 +673,6 @@ public class Model {
         isExplosion = true;
     }
 
-    public void playMusic(String musicLocation){
-
-        try{
-            File musicPath = new File(musicLocation);
-            if (musicPath.exists()){
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
-                clip.start();
-                clip.loop(Clip.LOOP_CONTINUOUSLY);
-            }else{
-                System.out.println("Cannot find the Audio   File");
-            }
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
     public void planeShootAtomic() {
         plane.shootAtomic();
     }

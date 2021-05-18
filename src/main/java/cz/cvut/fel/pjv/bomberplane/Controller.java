@@ -19,53 +19,63 @@ import java.util.logging.Logger;
  */
 public class Controller extends JFrame implements ActionListener {
 
-    private static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
+    private  final Logger LOGGER = Logger.getLogger(Controller.class.getName());
 
 
     private Timer timer;
-    private static boolean inGame = false;
-    private static boolean inIntro = true;
-    private static boolean inOutro = false;
-    private static boolean inMenu = false;
-    private static boolean inPause = false;
+    private boolean inGame = false;
+    private boolean inIntro = true;
+    private boolean inOutro = false;
+    private boolean inMenu = false;
+    private boolean inPause = false;
+    private boolean isMusic = false;
+    public boolean ok;
 
-    public static boolean isInPause() {
+    public boolean isIsMusic() {
+        return isMusic;
+    }
+
+    public  void setIsMusic(boolean isMusic) {
+        this.isMusic = isMusic;
+    }
+
+    public  boolean isInPause() {
         return inPause;
     }
 
-    public static void setInPause(boolean inPause) {
-        Controller.inPause = inPause;
+    public  void setInPause(boolean inPause) {
+        this.inPause = inPause;
     }
 
-    public static boolean isInGame() {
+    public  boolean isInGame() {
         return inGame;
     }
 
-    public static boolean isInIntro() {
+    public  boolean isInIntro() {
         return inIntro;
     }
 
-    public static void setInGame(boolean inGame) {
-        Controller.inGame = inGame;
+    public  void setInGame(boolean inGame) {
+        this.inGame = inGame;
     }
 
-    public static void setInIntro(boolean inIntro) {
-        Controller.inIntro = inIntro;
+    public  void setInIntro(boolean inIntro) {
+        this.inIntro = inIntro;
     }
 
-    public static void setInOutro(boolean inOutro) {
-        Controller.inOutro = inOutro;
+    public  void setInOutro(boolean inOutro) {
+        this.inOutro = inOutro;
     }
 
-    public static void setInMenu(boolean inMenu) {
-        Controller.inMenu = inMenu;
+    public  void setInMenu(boolean inMenu) {
+        this.inMenu = inMenu;
     }
 
-    public static boolean isInOutro() {
+    public  boolean isInOutro() {
         return inOutro;
     }
 
-    public static boolean isInMenu() {
+    public  boolean isInMenu() {
         return inMenu;
     }
 
@@ -74,8 +84,15 @@ public class Controller extends JFrame implements ActionListener {
 
 
     public Controller() {
+        ok = true;
+        inGame = false;
+        inIntro = true;
+        inOutro = false;
+        inMenu = false;
+        inPause = false;
+        isMusic = false;
         LOGGER.log(Level.INFO, "Application runs");
-        gameModel = new Model();
+        gameModel = new Model(this);
         gameView = new View(gameModel);
         addKeyListener(new MyKeyAdapter());
 
