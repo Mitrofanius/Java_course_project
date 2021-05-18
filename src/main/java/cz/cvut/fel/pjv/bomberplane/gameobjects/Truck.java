@@ -11,7 +11,8 @@ import java.awt.*;
 public class Truck extends Vehicle{
     int[] map = new int[650];
 
-    public Truck(Image picl, Image picr, int x, int y, int speed) {
+    public Truck(Image picl, Image picr, int x, int y, int speed, int width) {
+        setWidth(width);
         setPicLeft(picl);
         setPicRight(picr);
         if (speed > 0) {

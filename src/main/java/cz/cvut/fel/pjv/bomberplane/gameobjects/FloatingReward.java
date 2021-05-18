@@ -51,7 +51,6 @@ public class FloatingReward {
         picture = img;
         caught = false;
         benefit = bn;
-        System.out.println(benefit + " benefit");
     }
 
     public void move(){

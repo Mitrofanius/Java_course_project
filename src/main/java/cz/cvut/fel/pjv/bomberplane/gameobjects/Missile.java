@@ -12,6 +12,7 @@ import java.awt.*;
  */
 public class Missile extends MainGameObj{
     private int firepower;
+    private int width, height;
 
     private Image picture;
     private boolean explosion = false;
@@ -56,8 +57,10 @@ public class Missile extends MainGameObj{
         return explosion;
     }
 
-    public Missile(int x, int y, int speed, Image pic) {
+    public Missile(int x, int y, int speed, Image pic, int w, int h) {
         active = true;
+        width = w;
+        height = h;
         setPositionX(x + 15);
         setPositionY(y + 15);
         speedX = speed;
@@ -71,11 +74,11 @@ public class Missile extends MainGameObj{
             explosion = true;
             active = false;
         }
-        if (getPositionX() >= Model.width - 5) {
+        if (getPositionX() >= width - 5) {
             setPositionX(0);
         }
         else if (getPositionX() <= 0) {
-            setPositionX(Model.width - 6);
+            setPositionX(width - 6);
         }
     }
 

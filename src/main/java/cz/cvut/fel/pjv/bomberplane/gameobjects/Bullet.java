@@ -12,6 +12,7 @@ import java.awt.*;
  */
 public class Bullet {
     private int firepower;
+    private int width, reachLineHeight;
     private int positionX;
     private int positionY;
     private Image picture;
@@ -59,8 +60,10 @@ public class Bullet {
         return explosion;
     }
 
-    public Bullet(int x, int y, int speed, Image pic) {
+    public Bullet(int x, int y, int speed, int w, int reachLH, Image pic) {
         active = true;
+        width = w;
+        reachLineHeight = reachLH;
         positionX = x + 15;
         positionY = y;
         speedX = speed;
@@ -70,14 +73,14 @@ public class Bullet {
     public void move() {
         positionX += speedX;
         positionY -= speedY;
-        if (positionY <= Model.getReachLineHeight()) {
+        if (positionY <= reachLineHeight) {
             active = false;
         }
-        if (positionX >= Model.width - 5) {
+        if (positionX >= width - 5) {
             positionX = 0;
         }
         else if (positionX <= 0) {
-            positionX = Model.width - 6;
+            positionX = width - 6;
         }
     }
 

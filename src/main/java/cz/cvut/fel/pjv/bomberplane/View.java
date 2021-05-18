@@ -5,6 +5,18 @@ import cz.cvut.fel.pjv.bomberplane.gameobjects.*;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * All drawing of graphics is done here.
+ * And nothing more.
+ * Ask model about the states of the game objects ->
+ * draw them on the map
+ *
+ *      Hierarchy:
+ * Controller -> View.drawView() -> repaint() (awt method) ->
+ * paintComponent(awt method) -> this.doDrawing() ->
+ * asks the model about the state and draws one of the views:
+ * either game or one of menus
+ */
 public class View extends JPanel {
     private Color myColor = new Color(16, 174, 187, 129);
     private final Font smallFont = new Font("Helvetica", Font.BOLD, 14);
@@ -236,7 +248,6 @@ public class View extends JPanel {
 
     void drawDottedLine(Graphics2D g2d) {
         g2d.setColor(new Color(0x70F1DBDB, true));
-        // g2d.setColor(Color.white);
         for (int i = 0; i < gameModel.width; i += 6) {
             g2d.drawLine(i, gameModel.getReachLineHeight(), i + 2, gameModel.getReachLineHeight());
         }

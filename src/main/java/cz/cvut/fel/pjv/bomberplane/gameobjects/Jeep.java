@@ -13,7 +13,8 @@ public class Jeep extends Vehicle {
     int[] map = new int[650];
 
 
-    public Jeep(Image pic, int x, int y, int speed) {
+    public Jeep(Image pic, int x, int y, int speed, int width) {
+        setWidth(width);
         this.setPicture(pic);
         setPicLeft(pic);
         setPicRight(pic);

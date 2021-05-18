@@ -11,6 +11,7 @@ import java.util.LinkedList;
  * Plane object to be controlled by a user
  */
 public class Plane extends PlaneBuilder {
+    private int width, height;
 
     private int speedDiagonal = 3;
 
@@ -65,7 +66,9 @@ public class Plane extends PlaneBuilder {
 
     private LinkedList<Missile> bombs;
 
-    public Plane(int speed, int dir, int numOfBombs) {
+    public Plane(int speed, int dir, int numOfBombs, int w, int h) {
+        width = w;
+        height = h;
         this.setSpeed(speed);
         this.setSpeedX(speed);
         this.setSpeedY(0);
@@ -84,7 +87,7 @@ public class Plane extends PlaneBuilder {
 
     public void shoot() {
         if (numOfConcurrentBombsToDrop > bombs.size()) {
-            bombs.add(new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic()));
+            bombs.add(new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic(), width, height));
         }
     }
 
@@ -93,7 +96,7 @@ public class Plane extends PlaneBuilder {
             return;
         }
         if (numOfConcurrentBombsToDrop > bombs.size()) {
-            Missile bmb = new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic());
+            Missile bmb = new Missile(this.getPositionX(), this.getPositionY(), this.getSpeedX(), this.getBombPic(), width, height);
             bmb.setAtomic(true);
             bombs.add(bmb);
             numOfAtomicBombs -= 1;
@@ -114,11 +117,11 @@ public class Plane extends PlaneBuilder {
     public void move() {
         this.setPositionX(this.getPositionX() + this.getSpeedX());
         this.setPositionY(this.getPositionY() + this.getSpeedY());
-        if ((this.getPositionX() + transferOffset - transferOffset / 3) >= Model.width) {
+        if ((this.getPositionX() + transferOffset - transferOffset / 3) >= width) {
             this.setPositionX(-transferOffset + 1);
         }
         if ((this.getPositionX() + transferOffset) <= 0) {
-            this.setPositionX(Model.width - transferOffset - 1);
+            this.setPositionX(width - transferOffset - 1);
         }
         if ((this.getPositionY() < 0)) {
             this.setSpeedY(this.getSpeed());

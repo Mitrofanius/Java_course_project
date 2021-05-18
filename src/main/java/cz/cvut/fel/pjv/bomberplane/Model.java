@@ -1,17 +1,36 @@
 package cz.cvut.fel.pjv.bomberplane;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import cz.cvut.fel.pjv.bomberplane.gameobjects.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * A class to control the game: check user input and provide methods for
- * interaction between objects
+ * A class that provides methods for
+ * interaction between the objects
+ * and updating the game state.
+ * <p>
+ * All methods starting with "check"
+ * check some list of game objects
+ * in a "for" loop and
+ * delete inactive entities
+ * <p>
+ * All methods starting with "move"
+ * update coordinates of the game objects
+ * on the map
+ * <p>
+ * Contains methods to initialize levels,
+ * to parse level information
+ * from json and saving game states to json.
  */
 public class Model {
     // Variables declaration
@@ -23,14 +42,26 @@ public class Model {
         return savedGameExists;
     }
 
-    public static final int width = 650;
-    public static final int height = 400;
+    private static final Logger LOGGER = Logger.getLogger(Model.class.getName());
+
+
+    public final int width = 650;
+
+    public int getHeight() {
+        return height;
+    }
+
+    public final int height = 400;
+
+    public int getWidth() {
+        return width;
+    }
 
     private Image jeepPic, truckPicLeft, tankPicLeft, tankPicUp,
             tankPicRight, bombPic, truckPicRight, explosionPic,
             houseRedPic, houseWhitePic, bonusBombPic, atomicBombPic,
             bombScorePic, lifePic, skullPic, atomicExplosionPic, killerPic;
-    private static Image bulletPic;
+    private Image bulletPic;
 
     String fromJson;
     private int level = 1;
@@ -38,7 +69,7 @@ public class Model {
     private int numTrucks;
     private int numTanks;
     private int numJeeps;
-    private static int reachLineHeight;
+    private int reachLineHeight;
 
     private int i;
 
@@ -64,16 +95,28 @@ public class Model {
         initBoard();
     }
 
+    /**
+     * This method is called from constructor,
+     * creates the plane, loads pictures
+     * and set initial parameters to the game board/model -
+     * downloads them from a file
+     */
     private void initBoard() {
         savedGameExists = false;
         if (!FileHandler.readFile(savedGameFileName).equals("NOINFO")) {
             savedGameExists = true;
         }
-        plane = new Plane(speed, 1, 0);
+        plane = new Plane(speed, 1, 0, width, height);
         loadPics();
         setInitParams();
     }
 
+    /**
+     * loads level information from a
+     * json file
+     *
+     * @param num
+     */
     public void loadLevelInfo(int num) {
         if (num == 0) {
             fromJson = FileHandler.readFile(savedGameFileName);
@@ -81,7 +124,6 @@ public class Model {
             String lvlFile = "level_" + num + ".json";
             fromJson = FileHandler.readFile(("JsonFiles\\" + lvlFile));
         }
-        JSONObject temp;
         JSONObject o = new JSONObject(fromJson);
         level = o.getInt("level");
 
@@ -97,7 +139,7 @@ public class Model {
         }
     }
 
-    public void createBuildings(JSONObject jo){
+    public void createBuildings(JSONObject jo) {
         JSONArray static_objs = jo.getJSONArray("buildings");
         JSONObject temp;
         for (i = 0; i < static_objs.length(); i++) {
@@ -113,10 +155,10 @@ public class Model {
         }
     }
 
-    public void createKillers(JSONObject jo){
+    public void createKillers(JSONObject jo) {
         JSONObject temp;
         JSONArray killersJO = jo.getJSONArray("killers");
-        for (i = 0; i < killersJO.length(); i++){
+        for (i = 0; i < killersJO.length(); i++) {
             temp = killersJO.getJSONObject(i);
             killer = new Killer(killerPic, temp.getInt("xPos"), temp.getInt("yPos"), temp.getInt("killerTimer"));
             killers.add(killer);
@@ -148,6 +190,7 @@ public class Model {
     }
 
     public void death() {
+        LOGGER.log(Level.INFO, "Plane has been terminated");
         if (plane.getNumberOfLives() > 1) {
             plane.setSpeedX(speed);
             plane.setSpeedY(0);
@@ -173,6 +216,12 @@ public class Model {
         buildings = new LinkedList<Building>();
         rewards = new LinkedList<FloatingReward>();
         killers = new LinkedList<Killer>();
+        plane.setPositionX(0);
+        plane.setPositionY(0);
+        plane.setPicture(plane.getPlanerigth());
+        plane.setDir(1);
+        plane.setSpeedX(plane.getSpeed());
+        plane.setSpeedY(0);
         plane.setNumOfConcurrentBombsToDrop(0);
         plane.setNumOfAtomicBombs(0);
         plane.setNumberOfKills(0);
@@ -233,11 +282,13 @@ public class Model {
     }
 
     private void checkKillers(Missile bomb) {
-        for (int i =killers.size() - 1; i > -1; i--) {
-            if ((bomb.getPositionX() + 10) > killers.get(i).getPositionX()
+        for (int i = killers.size() - 1; i > -1; i--) {
+            if (((bomb.getPositionX() + 10) > killers.get(i).getPositionX()
                     && bomb.getPositionX() - 30 < killers.get(i).getPositionX()
-                    && killers.get(i).getPositionY() >= groundY - 20) {
+                    && killers.get(i).getPositionY() >= groundY - 20)
+                    || killers.get(i).getPositionY() < 0) {
                 killers.remove(i);
+                LOGGER.log(Level.INFO, "Enemy's rocket destroyed");
             }
         }
     }
@@ -256,6 +307,8 @@ public class Model {
                             buildings.get(i).getPositionY(), BonusType.ATOMIC));
                 }
                 buildings.remove(i);
+                LOGGER.log(Level.INFO, "Enemy's building destroyed");
+
             }
         }
     }
@@ -265,6 +318,7 @@ public class Model {
             if ((bomb.getPositionX() + 10) > vehicles.get(i).getPositionX()
                     && bomb.getPositionX() - 30 < vehicles.get(i).getPositionX()) {
                 vehicles.remove(i);
+                LOGGER.log(Level.INFO, "Enemy's vehicle destroyed");
                 plane.setNumberOfKills(plane.getNumberOfKills() + 1);
             }
         }
@@ -274,16 +328,16 @@ public class Model {
         for (int i = killers.size() - 1; i > -1; i--) {
             if (killers.get(i).isActive()) {
                 killers.get(i).move();
-                if ((plane.getPositionX() + 30 >= killers.get(i).getPositionX())
+                if (((plane.getPositionX() + 30 >= killers.get(i).getPositionX())
                         && plane.getPositionX() - 15 < killers.get(i).getPositionX()
                         && plane.getPositionY() - 6 < killers.get(i).getPositionY()
-                        && plane.getPositionY() + 20 > killers.get(i).getPositionY()) {
+                        && plane.getPositionY() + 20 > killers.get(i).getPositionY())) {
 
                     plane.setDying(true);
                     killers.remove(i);
                 }
-            } else{
-
+            } else if (killers.get(i).getPositionY() <= 0) {
+                killers.remove(i);
             }
         }
     }
@@ -302,6 +356,7 @@ public class Model {
         vehicles = new LinkedList<Vehicle>();
         buildings = new LinkedList<Building>();
         bullets = new LinkedList<Bullet>();
+        killers = new LinkedList<Killer>();
         loadLevelInfo(0);
         fromJson = FileHandler.readFile(savedGameFileName);
         JSONObject jo = new JSONObject(fromJson);
@@ -319,10 +374,8 @@ public class Model {
         int tanks = 0;
         int trucks = 0;
         int jeeps = 0;
-        JSONObject o = new JSONObject(fromJson);
-        JSONObject temp = new JSONObject();
         JSONObject jo = new JSONObject();
-        JSONObject joHelp = new JSONObject();
+        JSONObject joHelp;
         jo.put("level", level);
         for (int i = 0; i < vehicles.size(); i++) {
             if (vehicles.get(i).isTank()) {
@@ -335,11 +388,11 @@ public class Model {
 
         JSONArray ja = new JSONArray();
 
-        for (int i = 0; i < killers.size(); i++){
+        for (int i = 0; i < killers.size(); i++) {
             joHelp = new JSONObject();
             joHelp.put("xPos", killers.get(i).getPositionX());
             joHelp.put("yPos", killers.get(i).getPositionY());
-            joHelp.put("killerTimer", killers.get(i).getShootTimer());
+            joHelp.put("killerTimer", 0);
             ja.put(joHelp);
         }
         jo.put("killers", ja);
@@ -349,6 +402,7 @@ public class Model {
         jo.put("numJeeps", jeeps);
         jo.put("reachLineHeight", reachLineHeight);
         jo.put("numberOfKills", plane.getNumberOfKills());
+        jo.put("numOfAtomicBombs", plane.getNumOfAtomicBombs());
         jo.put("numOfAtomicBombs", plane.getNumOfAtomicBombs());
         jo.put("numOfConcurrentBombsToDrop", plane.getNumOfConcurrentBombsToDrop());
         jo.put("planeX", plane.getPositionX());
@@ -382,6 +436,8 @@ public class Model {
         File check = new File(s);
         if (!check.isFile()) {
             Win = true;
+            LOGGER.log(Level.INFO, "Last level ended");
+            LOGGER.log(Level.WARNING, "No more levels can be loaded");
             FileHandler.writeToFile(savedGameFileName, "NOINFO");
             return;
         }
@@ -399,7 +455,7 @@ public class Model {
     }
 
 
-    public static int getReachLineHeight() {
+    public int getReachLineHeight() {
         return reachLineHeight;
     }
 
@@ -415,7 +471,7 @@ public class Model {
         return lifePic;
     }
 
-    public static Image getBulletPic() {
+    public Image getBulletPic() {
         return bulletPic;
     }
 
@@ -429,8 +485,10 @@ public class Model {
                 rewards.get(i).setCaught(true);
 
                 if (rewards.get(i).getBenefit().equals(BonusType.PLUSBOMB)) {
+                    LOGGER.log(Level.INFO, "Bonus is caught, TYPE PLUSBOMB");
                     plane.setNumOfConcurrentBombsToDrop(plane.getNumOfConcurrentBombsToDrop() + 1);
                 } else {
+                    LOGGER.log(Level.INFO, "Bonus is caught, TYPE ATOMIC");
                     plane.setNumOfAtomicBombs(plane.getNumOfAtomicBombs() + 1);
                 }
                 rewards.remove(i);
@@ -483,26 +541,21 @@ public class Model {
 
     private void initLevel() {
         levelCounterTimeShow = 0;
-        plane.setPositionX(0);
-        plane.setPositionY(0);
-        plane.setSpeedY(0);
-        plane.setSpeedX(plane.getSpeed());
-        plane.setPicture(plane.getPlanerigth());
-        if (plane.getNumberOfLives() == 0){
+        if (plane.getNumberOfLives() == 0) {
             plane.setNumberOfLives(2);
         }
         int i = 0;
         int coordX = 0;
         int speedDir = 1;
         for (i = 0; i < numJeeps; i++) {
-            jeep = new Jeep(jeepPic, coordX, 310, 5 * speedDir);
+            jeep = new Jeep(jeepPic, coordX, 310, 5 * speedDir, width);
             vehicles.add(jeep);
             coordX += 100;
             speedDir *= -1;
         }
 
         for (i = 0; i < numTrucks; i++) {
-            truck = new Truck(truckPicLeft, truckPicRight, coordX, 310, 3 * speedDir);
+            truck = new Truck(truckPicLeft, truckPicRight, coordX, 310, 3 * speedDir, width);
             vehicles.add(truck);
             coordX += 70;
             speedDir *= -1;
@@ -510,11 +563,12 @@ public class Model {
 
         for (i = 0; i < numTanks; i++) {
             tank = new Tank(tankPicLeft, tankPicRight, tankPicUp, coordX, 310,
-                    3 * speedDir);
+                    3 * speedDir, width, reachLineHeight, bulletPic);
             vehicles.add(tank);
             coordX += 50;
             speedDir *= -1;
         }
+
 
     }
 
@@ -604,9 +658,29 @@ public class Model {
             plane.setNumberOfKills(plane.getNumberOfKills() + 1);
         }
         atomicCounter = 1;
+        LOGGER.log(Level.INFO, "Atomic bomb exploded");
+
         isExplosion = true;
     }
 
+    public void playMusic(String musicLocation){
+
+        try{
+            File musicPath = new File(musicLocation);
+            if (musicPath.exists()){
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInput);
+                clip.start();
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+            }else{
+                System.out.println("Cannot find the Audio   File");
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
     public void planeShootAtomic() {
         plane.shootAtomic();
     }

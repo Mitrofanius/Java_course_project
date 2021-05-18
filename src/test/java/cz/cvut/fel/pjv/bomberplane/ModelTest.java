@@ -1,32 +1,16 @@
 package cz.cvut.fel.pjv.bomberplane;
-
 import static org.junit.jupiter.api.Assertions.*;
-
 import cz.cvut.fel.pjv.bomberplane.gameobjects.Killer;
-import cz.cvut.fel.pjv.bomberplane.gameobjects.Missile;
-import cz.cvut.fel.pjv.bomberplane.gameobjects.Plane;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
 import java.awt.*;
 
+/**
+ *
+ */
 class ModelTest {
-//    Model gameModel;
     Image imgTest = null;
-
-//    @BeforeAll
-//    public static void setupAll(){
-//        System.out.println("Running tests");
-//    }
-//
-//    @BeforeEach
-//    public void setup(){
-//        Model gameModel = new Model();
-//    }
 
     @Test
     public void deathshouldSetPlaneNumberOfConcurrentBombsToZero(){

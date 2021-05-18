@@ -5,9 +5,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.security.KeyStore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+/**
+ * A class to control the game: checks user input
+ * from the keyboard, controls model and view,
+ * contains timer to say the model
+ * when to update game states and view when to draw
+ * graphics.
+ *
+ * Contains inner class KeyAdapter for key listening.
+ */
 public class Controller extends JFrame implements ActionListener {
+
+    private static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
+
 
     private Timer timer;
     private static boolean inGame = false;
@@ -61,6 +74,7 @@ public class Controller extends JFrame implements ActionListener {
 
 
     public Controller() {
+        LOGGER.log(Level.INFO, "Application runs");
         gameModel = new Model();
         gameView = new View(gameModel);
         addKeyListener(new MyKeyAdapter());
@@ -158,6 +172,8 @@ public class Controller extends JFrame implements ActionListener {
                     if (timer.isRunning()) {
                         inGame = false;
                         inPause = true;
+                        LOGGER.log(Level.INFO, "Game paused");
+
                     } else {
                         inGame = true;
                     }
@@ -171,13 +187,17 @@ public class Controller extends JFrame implements ActionListener {
                 if (inIntro && key == KeyEvent.VK_SPACE) {
                     inIntro = false;
                     inGame = true;
+                    LOGGER.log(Level.INFO, "New Game");
                     gameModel.setInitParams();
                 } else if (inIntro && key == KeyEvent.VK_C) {
                     inIntro = false;
                     inGame = true;
+                    LOGGER.log(Level.INFO, "Loading last saved game to resume");
                     gameModel.loadLastGame();
                 }
                 else if (inPause && key == KeyEvent.VK_SPACE) {
+                    LOGGER.log(Level.INFO, "Game resumed");
+
                     inPause = false;
                     inGame = true;
                 }
@@ -185,6 +205,7 @@ public class Controller extends JFrame implements ActionListener {
                     inPause = false;
                     inGame = false;
                     inIntro = true;
+                    LOGGER.log(Level.INFO, "Session ended");
                     gameModel.saveCurrentGame();
                 }
             }

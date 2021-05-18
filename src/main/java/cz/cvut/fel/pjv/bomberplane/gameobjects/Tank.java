@@ -11,14 +11,18 @@ import java.awt.*;
  * @see Vehicle
  */
 public class Tank extends Vehicle {
-    Image picUp;
-
+    private Image picUp;
+    private Image bulletPic;
+    private int reachLineHeight;
 
     int[] map = new int[650];
 
 
-    public Tank(Image picl, Image picr, Image picu, int x, int y, int speed) {
+    public Tank(Image picl, Image picr, Image picu, int x, int y, int speed, int w, int reachLH, Image bulletPic) {
 
+        this.bulletPic = bulletPic;
+        setWidth(w);
+        reachLineHeight = reachLH;
         setPicLeft(picl);
         setPicRight(picr);
         this.picUp = picu;
@@ -58,7 +62,7 @@ public class Tank extends Vehicle {
 
     @Override
     public void shoot() {
-        setBullet(new Bullet(getPositionX(), getPositionY(), getSpeedX(), Model.getBulletPic()));
+        setBullet(new Bullet(getPositionX(), getPositionY(), getSpeedX(), getWidth(), reachLineHeight, bulletPic));
     }
     @Override
     public boolean isTank(){

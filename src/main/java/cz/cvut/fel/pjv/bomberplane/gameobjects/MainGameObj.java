@@ -2,6 +2,15 @@ package cz.cvut.fel.pjv.bomberplane.gameobjects;
 
 import java.awt.*;
 
+/**
+ * All game objects have
+ * coordinates and a picture.
+ *
+ * This common ancestor makes it easy
+ * to provide effective interface to draw
+ * different object with the same method
+ * in View.
+ */
 public abstract class MainGameObj {
 
     private int positionX;

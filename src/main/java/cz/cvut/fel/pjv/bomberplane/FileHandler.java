@@ -2,6 +2,8 @@ package cz.cvut.fel.pjv.bomberplane;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileHandler {
     public static String readFile(String arg) {
@@ -28,6 +30,8 @@ public class FileHandler {
         }
         return everything;
     }
+    private static final Logger LOGGER = Logger.getLogger(FileHandler.class.getName());
+
 
     public static void writeToFile(String fileName, String content) {
         try {
@@ -35,9 +39,10 @@ public class FileHandler {
             myWriter.write(content);
 
             myWriter.close();
-            System.out.println("Successfully wrote to the file.");
+            LOGGER.log(Level.SEVERE, "Game saved.");
+
         } catch (IOException e) {
-            System.out.println("An error occurred.");
+            LOGGER.log(Level.SEVERE, "Error occured while saving the game");
             e.printStackTrace();
         }
     }
